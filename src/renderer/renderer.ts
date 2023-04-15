@@ -26,7 +26,7 @@
  * ```
  */
 
-import './css/index.css';
+import '../css/index.css';
 
 export interface IElectronAPI {
     setTitle: (title:string) => Promise<void>,
