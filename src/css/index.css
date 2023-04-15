@@ -1,0 +1,235 @@
+/* Main menu */
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #282828;
+}
+
+li {
+  float: left;
+}
+
+li a {
+  display: block;
+  color: #d4d4d4;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+li a:hover:not(.active) {
+  background-color: #61afef;
+}
+
+.active {
+  background-color: #61afef;
+}
+
+/* Accordion */
+.accordion {
+  background-color: #282828;
+  color: #d4d4d4;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 16px;
+  transition: 0.4s;
+}
+
+.accordion:hover {
+  background-color: #3c3c3c;
+}
+
+.active-accordion,
+.accordion:hover {
+  background-color: #61afef;
+  color: #d4d4d4;
+}
+
+.panel {
+  padding: 0 18px;
+  background-color: #1e1e1e;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+}
+
+/* Select */
+select {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+  border: none;
+  background-color: #2d2d2d;
+  color: #d4d4d4;
+}
+
+/* Radio buttons and checkboxes */
+label {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #d4d4d4;
+}
+
+label input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: #2d2d2d;
+  border-radius: 5px;
+}
+
+label:hover input~.checkmark {
+  background-color: #3c3c3c;
+}
+
+label input:checked~.checkmark {
+  background-color: #61afef;
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+label input:checked~.checkmark:after {
+  display: block;
+}
+
+label .checkmark:after {
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid #d4d4d4;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+/* Input fields */
+input {
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  margin-bottom: 10px;
+  background-color: #2d2d2d;
+  color: #d4d4d4;
+}
+
+/* Login button */
+button[type=submit] {
+  background-color: #61afef;
+  color: #d4d4d4;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+button[type=submit]:hover {
+  background-color: #4582b4;
+}
+
+body {
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header */
+header {
+  background-color: #282828;
+  color: #d4d4d4;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Navigation */
+nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+nav ul {
+  list-style-type: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+nav ul li {
+  margin-right: 10px;
+}
+
+nav ul li a {
+  color: #d4d4d4;
+  text-decoration: none;
+}
+
+nav ul li a:hover {
+  text-decoration: underline;
+}
+
+/* Main */
+main {
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Code block */
+pre {
+  background-color: #282c34;
+  color: #d4d4d4;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  overflow: auto;
+}
+
+/* Code block syntax highlighting */
+pre code {
+  color: #d4d4d4;
+}
+
+/* Links */
+a {
+  color: #61afef;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

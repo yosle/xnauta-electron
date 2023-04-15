@@ -1,8 +1,8 @@
 {
-  "name": "my-new-app",
+  "name": "XNauta",
   "productName": "my-new-app",
-  "version": "1.0.0",
-  "description": "My Electron application description",
+  "version": "0.1.0",
+  "description": "Cliente Multiplataforma para el Portal de ETECSA",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
@@ -13,7 +13,7 @@
   },
   "keywords": [],
   "author": {
-    "name": "yosle",
+    "name": "Yosleivy Baez Acosta",
     "email": "yosle007@gmail.com"
   },
   "license": "MIT",
@@ -39,6 +39,28 @@
     "typescript": "~4.5.4"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
-  }
+    "data-store": "^4.0.3",
+    "electron-squirrel-startup": "^1.0.0",
+    "got": "^12.6.0",
+    "tough-cookie": "^4.1.2"
+  },
+  "plugins": [
+    [
+      "@electron-forge/plugin-webpack",
+      {
+        "mainConfig": "./webpack.main.config.js",
+        "devContentSecurityPolicy": "connect-src 'self' * 'unsafe-eval'",
+        "renderer": {
+          "config": "./webpack.renderer.config.js",
+          "entryPoints": [
+            {
+              "html": "./src/index.html",
+              "js": "./src/renderer.ts",
+              "name": "main_window"
+            }
+          ]
+        }
+      }
+    ]
+  ]
 }
