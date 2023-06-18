@@ -29,8 +29,7 @@
 import '../css/index.css';
 
 export interface IElectronAPI {
-    setTitle: (title:string) => Promise<void>,
-    openFile:()=>Promise<string>
+    handleLogin: (user: string, password: string) => Promise<void>
   }
   
   declare global {
@@ -40,11 +39,13 @@ export interface IElectronAPI {
   }
 
 const setButton = document.getElementById('btn')
-const titleInput = document.getElementById('email') as HTMLInputElement;
+const userInput = document.getElementById('email') as HTMLInputElement;
+const passwordInput = document.getElementById('password') as HTMLInputElement;
 setButton.addEventListener('click', () => {
-    const title = titleInput.value
-    window.electronAPI.setTitle(title);
-    console.log("Esto lo llamo desde el front")
+    const user = userInput.value;
+    const password = passwordInput.value;
+    window.electronAPI.handleLogin(user, password);
+    console.log("Esto lo llamo desde el front", user , password)
 });
 
 
