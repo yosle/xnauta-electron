@@ -4,9 +4,15 @@ import {ipcRenderer, contextBridge } from "electron";
 
 
 
+// contextBridge.exposeInMainWorld('electronAPI', {
+//     setTitle: (title: string) => {
+//     return ipcRenderer.send('set-title', title);
+//   }
+// });
+
 contextBridge.exposeInMainWorld('electronAPI', {
-    setTitle: (title: string) => {
-    return ipcRenderer.send('set-title', title);
+    handleLogin: (user: string, password: string) => {
+    return ipcRenderer.send('on-handleLogin', user, password);
   }
 });
 
