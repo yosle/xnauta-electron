@@ -26,6 +26,14 @@ const config: ForgeConfig = {
               js: './src/preload/preload.ts',
             },
           },
+          {
+            html: './src/pages/counter.html',
+            js: './src/renderer/renderer.ts',
+            name: 'counter_window',
+            preload: {
+              js: './src/preload/preload.ts',
+            },
+          },
         ],
       },
     }),
