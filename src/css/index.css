@@ -136,7 +136,7 @@ input {
 }
 
 /* Login button */
-button[type=submit] {
+button {
   background-color: #61afef;
   color: #d4d4d4;
   padding: 10px 20px;
@@ -145,7 +145,7 @@ button[type=submit] {
   cursor: pointer;
 }
 
-button[type=submit]:hover {
+button:hover {
   background-color: #4582b4;
 }
 
