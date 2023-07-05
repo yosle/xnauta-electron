@@ -9,11 +9,39 @@
 <body>
   <main>
     <div className="container">
-      <h2 class="login-title">Cuenta Nauta</h2>
-      <div class="panel"></div>
-      <form>
+      <h2 class="login-title container">Cuenta Nauta</h2>
+
+      <div id="counter" class="container" style="display: none;">
+        <div class="counter" style="display: inline-block;">
+          <span class="value" id="data-days">0</span>
+          <span class="suffix">Days</span>
+        </div>
+        <div class="counter" style="display: inline-block;">
+          <span class="value" id="data-hours">0</span>
+          <span class="suffix">Hours</span>
+        </div>
+
+        <div class="counter" style="display: inline-block;">
+          <span class="value" id="data-minutes">0</span>
+          <span class="suffix">Mins</span>
+        </div>
+
+        <div class="counter" style="display: inline-block;">
+          <span class="value" id="data-seconds">0</span>
+          <span class="suffix">Secs</span>
+        </div>
+        <br />
+        <button type="button" id="update-counter-btn" value="Actualizar">
+          Actualizar
+        </button>
+        <button type="button" id="logout-btn" value="Cerrar sesión">
+          Cerrar sesión
+        </button>
+      </div>
+
+      <form id="form" action="#" style="display: block;">
         <div className="container">
-          <input id="email" type="email" placeholder="micuenta@nauta.com.cu" name="email" />
+          <input id="email" type="text" placeholder="micuenta@nauta.com.cu" name="email" />
         </div>
         <br />
         <div>
@@ -25,8 +53,8 @@
             Iniciar sesión
           </button>
         </div>
+      </form>
     </div>
-    </form>
   </main>
 </body>
 
