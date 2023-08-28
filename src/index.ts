@@ -41,7 +41,7 @@ const createWindow = (): void => {
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 
   app.whenReady().then(() => {
     ipcMain.on('on-handleLogin', handleLogin);
@@ -59,6 +59,7 @@ const createWindow = (): void => {
       dialog.showErrorBox("Ups", "Debe especificar el usuario y contraseña.")
       return;
     }
+
     if (user.indexOf("@") == -1) {
       const resultClicked = dialog.showMessageBoxSync({
         type: 'question',
@@ -68,24 +69,38 @@ const createWindow = (): void => {
       });
 
       if (resultClicked == 2) console.log("reset form");
-      if (resultClicked == 0 || resultClicked == 1) {
-        try {
-          const nauta = new Nauta();
-          const result = await nauta.login();
-          console.log("el resul es ", result)
-        } catch (error) {
-          dialog.showErrorBox('Error', `Error de conexion: ${error.message}`)
-        }
-
-        mainWindow.webContents.send('show-counter', { name: "Oleg" });
+      if (resultClicked == 0) {
+        user += '@nauta.com.cu'
       }
-      return;
+
+      if (resultClicked == 1) {
+        user += '@nauta.co.cu'
+      }
+      try {
+        console.log("get user and password", user, password)
+        const nauta = new Nauta();
+        const result = await nauta.login();
+        mainWindow.webContents.send('show-counter');
+        console.log("el resul es ", result)
+      } catch (error) {
+        dialog.showErrorBox('Error', `Error de conexion: ${error.message}`)
+      }
+
+      mainWindow.webContents.send('show-counter', { name: "Oleg" });
     } else {
       if (!nautaDomains.includes(domain)) {
         dialog.showErrorBox("Ups",
           "Los usuarios de cuentas Nauta deben tener como terminar en '@nauta.co.cu' o '@nauta.com.cu " +
           "Puede escribir solo el nombre de usuario y se le preguntará e tipo de cuenta.");
+        return;
       }
+
+      //login
+      console.log("get user and password", user, password)
+      const nauta = new Nauta();
+      const result = await nauta.login();
+      mainWindow.webContents.send('show-counter');
+      console.log("el resul es ", result)
     }
   }
 };
