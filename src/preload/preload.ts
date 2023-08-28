@@ -12,7 +12,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   handleLogin: (user: string, password: string) => {
     return ipcRenderer.send('on-handleLogin', user, password);
   },
-  handleCounter: (callback: (event: IpcRendererEvent | IpcMainEvent, value: any) => void) => ipcRenderer.on('show-counter', callback)
+  handleCounter: (callback: (event: IpcRendererEvent | IpcMainEvent, value: any) => void) => ipcRenderer.on('show-counter', callback),
 
 });
 

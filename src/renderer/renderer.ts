@@ -115,9 +115,10 @@ window.electronAPI.handleCounter((event, value) => {
 
 })
 
-window.electronAPI.initCountDown((event, availableTime: Date) => {
-  console.log("dfsdfsdf", event, availableTime)
-});
+// window.electronAPI.initCountDown((event, availableTime: Date) => {
+//   console.log("dfsdfsdf", event, availableTime);
+
+// });
 
 
 

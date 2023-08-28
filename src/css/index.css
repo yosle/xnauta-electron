@@ -79,6 +79,7 @@ label {
   cursor: pointer;
   font-size: 14px;
   color: #d4d4d4;
+
 }
 
 label input {
@@ -133,6 +134,14 @@ input {
   margin-bottom: 10px;
   background-color: #2d2d2d;
   color: #d4d4d4;
+  border-color: #61afef;
+  outline: #4582b4;
+}
+
+
+
+input :focus {
+  border-color: #61afef;
 }
 
 /* Login button */
