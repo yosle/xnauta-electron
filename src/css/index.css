@@ -79,7 +79,6 @@ label {
   cursor: pointer;
   font-size: 14px;
   color: #d4d4d4;
-
 }
 
 label input {
@@ -98,11 +97,11 @@ label input {
   border-radius: 5px;
 }
 
-label:hover input~.checkmark {
+label:hover input ~ .checkmark {
   background-color: #3c3c3c;
 }
 
-label input:checked~.checkmark {
+label input:checked ~ .checkmark {
   background-color: #61afef;
 }
 
@@ -112,7 +111,7 @@ label input:checked~.checkmark {
   display: none;
 }
 
-label input:checked~.checkmark:after {
+label input:checked ~ .checkmark:after {
   display: block;
 }
 
@@ -138,30 +137,49 @@ input {
   outline: #4582b4;
 }
 
-
-
 input :focus {
   border-color: #61afef;
 }
 
-/* Login button */
-button {
-  background-color: #61afef;
+/* Input Fields */
+input[type="text"],
+input[type="password"] {
+  background-color: #3c3c3c;
+  border: 1px solid #555;
   color: #d4d4d4;
-  padding: 10px 20px;
-  border-radius: 5px;
+  padding: 8px;
+  margin: 8px 0;
+  border-radius: 4px;
+  outline: none;
+  width: 200px;
+}
+
+input[type="text"]::placeholder,
+input[type="password"]::placeholder {
+  color: #a6a6a6;
+}
+
+/* Button */
+button {
+  background-color: #0e639c;
+  color: #fff;
   border: none;
+  padding: 10px 20px;
+  margin: 8px 0;
+  border-radius: 4px;
   cursor: pointer;
+  font-size: 16px;
+  outline: none;
 }
 
 button:hover {
-  background-color: #4582b4;
+  background-color: #1177bb;
 }
 
 body {
   background-color: #1e1e1e;
   color: #d4d4d4;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Header */

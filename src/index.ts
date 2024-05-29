@@ -10,6 +10,7 @@ import {
 import ElectronStore from "electron-store";
 
 import Nauta from "./lib/nauta/Nauta";
+import Session from "./lib/nauta/Session";
 import { CookieJar } from "tough-cookie";
 
 crashReporter.start({ submitURL: "https://t.me/UtilesSaldo" });
@@ -28,7 +29,7 @@ if (require("electron-squirrel-startup")) {
 const store = new ElectronStore();
 const cookieJar = new CookieJar();
 const nauta = new Nauta(store, cookieJar);
-
+store.openInEditor();
 const createWindow = (): void => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -49,6 +50,7 @@ const createWindow = (): void => {
 
   mainWindow.once("ready-to-show", () => {
     mainWindow.show();
+    checkPreviousSession();
   });
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
@@ -57,6 +59,7 @@ const createWindow = (): void => {
 
   app.whenReady().then(() => {
     ipcMain.on("login", handleLogin);
+    ipcMain.on("session_logout", handleSessionLogout);
   });
 
   async function handleLogin(
@@ -92,23 +95,85 @@ const createWindow = (): void => {
         console.log("Seleccionado cancelar");
         return;
       }
+    }
 
-      try {
-        // show loading
-        mainWindow.webContents.send("show_loading", true);
+    try {
+      // show loading
+      mainWindow.webContents.send("show_loading", true);
 
-        const session = await nauta.login(user, password);
-        if (!session) {
-          dialog.showErrorBox("Error", `No se ha podido conectar`);
-        }
-        mainWindow.webContents.send("show_loading", false);
-
-        // mainWindow.webContents.send("show_counter");
-      } catch (error) {
-        mainWindow.webContents.send("show_loading", false);
-        dialog.showErrorBox("Error", `Error de conexion: ${error.message}`);
+      const session = await nauta.login(user, password);
+      if (!session) {
+        dialog.showErrorBox("Error", `No se ha podido conectar`);
       }
-      mainWindow.webContents.send("show-counter", { name: "Oleg" });
+      mainWindow.webContents.send("show_loading", false);
+
+      // mainWindow.webContents.send("show_counter");
+    } catch (error) {
+      mainWindow.webContents.send("show_loading", false);
+      dialog.showErrorBox("Error", `Error de conexion: ${error.message}`);
+    }
+    // mainWindow.webContents.send("show-counter", { name: "Oleg" });
+  }
+
+  async function handleSessionLogout() {
+    const username = (await store.get("username")) as string;
+    const uuid = (await store.get("uuid")) as string;
+    if (!username || !uuid) {
+      return;
+    }
+    const sessionHandler = new Session({
+      username,
+      uuid,
+    });
+    const result = await sessionHandler.logout();
+    if (!result) {
+      dialog.showErrorBox("Error", "No se puedo cerrar sesion.");
+    } else {
+      dialog.showMessageBox(mainWindow, {
+        message: "Sesion cerrada con exito",
+      });
+    }
+  }
+
+  async function checkPreviousSession() {
+    console.log("check previous session");
+    const username = (await store.get("username")) as string;
+    const uuid = (await store.get("uuid")) as string;
+
+    if (!!username && !!uuid) {
+      console.log("Try to retrieve previous session");
+      const retrieveSession = dialog.showMessageBoxSync({
+        type: "question",
+        message:
+          "Hay una session guardada en la aplicacion de la ultima vez que se uso. Desea intentar recuperarla?",
+        buttons: ["Si", "No"],
+        title: "Recuperar sesion",
+      });
+
+      if (retrieveSession == 0) {
+        const sessionHandler = new Session({
+          username,
+          uuid,
+        });
+        try {
+          const time = await sessionHandler.getRemainingTime();
+          console.log("tiempo restante", time);
+          dialog.showMessageBox(mainWindow, {
+            message: "sesion recuperada con exito",
+          });
+          // notificar la UI qye se recupero la session
+          // y mostrar el tiempo restante
+          mainWindow.webContents.send("show_counter", time);
+        } catch (error) {
+          console.log("Error al obtener tiempo restante!", error);
+          dialog.showErrorBox(
+            "Error",
+            "No se puede recuperar la sesion activa previamente guardada."
+          );
+          // mejorar esto despues
+          store.clear();
+        }
+      }
     }
   }
 };

@@ -84,6 +84,7 @@ export default class Nauta {
    * @returns
    */
   public async login(username: string, password: string) {
+    console.log(`INIT login with credentials ${username}:${password}`);
     const cookieJar = this.cookieJar;
 
     try {
@@ -111,6 +112,7 @@ export default class Nauta {
       this.store.set(sessionData);
       return sessionData;
     } catch (error) {
+      console.error("Error al hacer login", error);
       return error;
     }
   }

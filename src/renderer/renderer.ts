@@ -30,6 +30,7 @@ import { IpcMainEvent } from "electron";
 import "../css/index.css";
 
 export interface IElectronAPI {
+  sessionLogout: () => Promise<void>;
   dogbark(arg0: string, arg1: string): unknown;
   handleLogin: (user: string, password: string) => Promise<void>;
   handleCounter: (callback: (event: any, value: any) => void) => void;
@@ -69,13 +70,25 @@ logOutBtn.addEventListener("click", () => {
   // const h1 = document.getElementById('num');
   div.style.display = "none";
   form.style.display = "block";
+  window.electronAPI.sessionLogout();
 });
-const initCounter = () => {
+const initCounter = (
+  leftHours: number,
+  leftMinutes: number,
+  leftSeconds: number
+) => {
+  console.log(
+    "Result recibido en el renderer initCounter",
+    leftHours,
+    leftMinutes,
+    leftSeconds
+  );
+
   const second = 1000,
     minute = second * 60,
     hour = minute * 60,
     day = hour * 24;
-  const countDown = new Date().getTime() + 15 * 60000;
+  const countDown = new Date().getTime() + leftMinutes * 60000;
   const intervalId = setInterval(() => {
     const now = new Date().getTime();
     const distance = countDown - now;
@@ -112,9 +125,8 @@ window.electronAPI.handleCounter((event, value) => {
   // const h1 = document.getElementById('num');
   div.style.display = "block";
   form.style.display = "none";
-  initCounter();
-  console.log("Result recibido en el renderer", value);
-  event.sender.send("counter-value", 22);
+  const { hours, minutes, seconds } = value;
+  initCounter(hours, minutes, seconds);
 });
 
 window.electronAPI.showLoading((event, value) => {
@@ -125,7 +137,3 @@ window.electronAPI.showLoading((event, value) => {
 //   console.log("dfsdfsdf", event, availableTime);
 
 // });
-
-console.log(
-  '👋 This message is being logged by "renderer.js", included via webpack'
-);
