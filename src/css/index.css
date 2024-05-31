@@ -126,7 +126,7 @@ label .checkmark:after {
 }
 
 /* Input fields */
-input {
+/* input {
   padding: 10px;
   border-radius: 5px;
   border: none;
@@ -135,15 +135,14 @@ input {
   color: #d4d4d4;
   border-color: #61afef;
   outline: #4582b4;
-}
+} */
 
 input :focus {
   border-color: #61afef;
 }
 
 /* Input Fields */
-input[type="text"],
-input[type="password"] {
+input {
   background-color: #3c3c3c;
   border: 1px solid #555;
   color: #d4d4d4;
@@ -154,10 +153,10 @@ input[type="password"] {
   width: 200px;
 }
 
-input[type="text"]::placeholder,
+/* input[type="text"]::placeholder,
 input[type="password"]::placeholder {
   color: #a6a6a6;
-}
+} */
 
 /* Button */
 button {
@@ -260,3 +259,25 @@ a:hover {
   justify-content: center;
   align-items: center;
 }
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 20px;
+  aspect-ratio: 1;
+  background: #25b09b;
+  box-shadow: 0 0 60px 15px #25b09b;
+  transform: translate(-80px);
+  clip-path: inset(0);
+  animation:
+    l4-1 0.5s ease-in-out infinite alternate,
+    l4-2 1s   ease-in-out infinite;
+}
+@keyframes l4-1 {
+  100% {transform: translateX(80px)}
+}
+@keyframes l4-2 {
+   33% {clip-path: inset(0 0 0 -100px)}
+   50% {clip-path: inset(0 0 0 0)     }
+   83% {clip-path: inset(0 -100px 0 0)}
+}
+

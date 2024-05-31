@@ -1,61 +1,74 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>XNauta v0.0.1</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <title>XNauta v0.0.1</title>
-</head>
-
-<body>
-  <main>
-    <div className="container">
-      <h2 class="login-title container">Cuenta Nauta</h2>
-
-      <div id="counter" class="container" style="display: none;">
-        <div class="counter" style="display: inline-block;">
-          <span class="value" id="data-days">0</span>
-          <span class="suffix">Days</span>
-        </div>
-        <div class="counter" style="display: inline-block;">
-          <span class="value" id="data-hours">0</span>
-          <span class="suffix">Hours</span>
-        </div>
-
-        <div class="counter" style="display: inline-block;">
-          <span class="value" id="data-minutes">0</span>
-          <span class="suffix">Mins</span>
-        </div>
-
-        <div class="counter" style="display: inline-block;">
-          <span class="value" id="data-seconds">0</span>
-          <span class="suffix">Secs</span>
-        </div>
-        <br />
-        <button type="button" id="update-counter-btn" value="Actualizar">
-          Actualizar
-        </button>
-        <button type="button" id="`" value="Cerrar sesión">
-          Cerrar sesión
-        </button>
+  <body>
+    <main>
+      <div class="container">
+        <div
+          class="loader"
+          id="loader"
+          style="display: none; margin-top: 50%"
+        ></div>
       </div>
+      <div className="container" id="app_container">
+        <h2 class="login-title container">Cuenta Nauta</h2>
 
-      <form id="form" action="#" style="display: block;">
-        <div className="container">
-          <input id="email" type="text" placeholder="micuenta@nauta.com.cu" name="email" />
-        </div>
-        <br />
-        <div>
-          <input id="password" type="password" placeholder="Password" name="password" required />
-        </div>
-        <br />
-        <div class="container">
-          <button type="submit" id="btn" value="Log in">
-            Iniciar sesión
+        <div id="counter" class="container" style="display: none">
+          <div class="counter" style="display: inline-block">
+            <span class="value" id="data-hours">0</span>
+            <span class="suffix">Hours</span>
+          </div>
+
+          <div class="counter" style="display: inline-block">
+            <span class="value" id="data-minutes">0</span>
+            <span class="suffix">Mins</span>
+          </div>
+
+          <div class="counter" style="display: inline-block">
+            <span class="value" id="data-seconds">0</span>
+            <span class="suffix">Secs</span>
+          </div>
+          <br />
+          <button type="button" id="update-counter-btn" value="Actualizar">
+            Actualizar
+          </button>
+          <button type="button" id="logout-btn" value="Cerrar sesión">
+            Cerrar sesión
           </button>
         </div>
-      </form>
-    </div>
-  </main>
-</body>
 
+        <form id="form" action="#" style="display: block">
+          <div className="container">
+            <input
+              id="email"
+              type="text"
+              placeholder="micuenta@nauta.com.cu"
+              name="email"
+              required
+            />
+          </div>
+          <br />
+          <div>
+            <input
+              id="password"
+              type="password"
+              placeholder="Password"
+              name="password"
+              required
+            />
+          </div>
+          <br />
+          <div class="container">
+            <button type="submit" id="btn" value="Log in">
+              Iniciar sesión
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </body>
 </html>

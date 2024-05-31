@@ -6,6 +6,7 @@ import {
   ipcMain,
   IpcMainEvent,
   dialog,
+  Notification,
 } from "electron";
 import ElectronStore from "electron-store";
 
@@ -29,13 +30,13 @@ if (require("electron-squirrel-startup")) {
 const store = new ElectronStore();
 const cookieJar = new CookieJar();
 const nauta = new Nauta(store, cookieJar);
-store.openInEditor();
+
 const createWindow = (): void => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     show: false,
-    height: 800,
-    width: 600,
+    height: 400,
+    width: 800,
     maximizable: false,
     backgroundColor: "#1e1e1e",
     resizable: false,
@@ -60,6 +61,7 @@ const createWindow = (): void => {
   app.whenReady().then(() => {
     ipcMain.on("login", handleLogin);
     ipcMain.on("session_logout", handleSessionLogout);
+    ipcMain.on("update_counter", handleUpdateCounter);
   });
 
   async function handleLogin(
@@ -71,7 +73,10 @@ const createWindow = (): void => {
       dialog.showErrorBox("Error", "No se puede establecer la conexion.");
       return;
     }
-
+    if (user.length == 0 || password.length == 0) {
+      dialog.showErrorBox("Error", `Debe escribir el usuario y la contraseña`);
+      return;
+    }
     if (!user.includes("@nauta.co.cu") && !user.includes("@nauta.com.cu")) {
       console.log("Preguntando al usuario el tipo de cuenta");
       const resultClicked = dialog.showMessageBoxSync({
@@ -100,14 +105,19 @@ const createWindow = (): void => {
     try {
       // show loading
       mainWindow.webContents.send("show_loading", true);
-
       const session = await nauta.login(user, password);
-      if (!session) {
+      if (!session || session instanceof Error) {
         dialog.showErrorBox("Error", `No se ha podido conectar`);
       }
+      const { username, uuid } = session;
+      const sessionHandler = new Session({
+        username,
+        uuid,
+      });
+      const time = await sessionHandler.getRemainingTime();
       mainWindow.webContents.send("show_loading", false);
-
-      // mainWindow.webContents.send("show_counter");
+      console.log("tiempo restante", time);
+      mainWindow.webContents.send("show_counter", time);
     } catch (error) {
       mainWindow.webContents.send("show_loading", false);
       dialog.showErrorBox("Error", `Error de conexion: ${error.message}`);
@@ -116,9 +126,11 @@ const createWindow = (): void => {
   }
 
   async function handleSessionLogout() {
+    mainWindow.webContents.send("show_loading", true);
     const username = (await store.get("username")) as string;
     const uuid = (await store.get("uuid")) as string;
     if (!username || !uuid) {
+      dialog.showErrorBox("Error", "No se encontro ninguna sesion guardada.");
       return;
     }
     const sessionHandler = new Session({
@@ -127,16 +139,25 @@ const createWindow = (): void => {
     });
     const result = await sessionHandler.logout();
     if (!result) {
+      mainWindow.webContents.send("show_loading", true);
       dialog.showErrorBox("Error", "No se puedo cerrar sesion.");
     } else {
-      dialog.showMessageBox(mainWindow, {
-        message: "Sesion cerrada con exito",
-      });
+      store.clear();
+      mainWindow.webContents.send("show_loading", false);
+      const NOTIFICATION_TITLE = "X Nauta";
+      const NOTIFICATION_BODY = "Sesion cerrada con exito";
+
+      new Notification({
+        title: NOTIFICATION_TITLE,
+        body: NOTIFICATION_BODY,
+      }).show();
+      mainWindow.webContents.send("show_login");
     }
   }
 
   async function checkPreviousSession() {
-    console.log("check previous session");
+    console.log("CHECK PREVIOUS SESSION");
+    mainWindow.webContents.send("show_loading", true);
     const username = (await store.get("username")) as string;
     const uuid = (await store.get("uuid")) as string;
 
@@ -158,11 +179,15 @@ const createWindow = (): void => {
         try {
           const time = await sessionHandler.getRemainingTime();
           console.log("tiempo restante", time);
-          dialog.showMessageBox(mainWindow, {
-            message: "sesion recuperada con exito",
-          });
-          // notificar la UI qye se recupero la session
-          // y mostrar el tiempo restante
+
+          const NOTIFICATION_TITLE = "X Nauta";
+          const NOTIFICATION_BODY = "Sesion recuperada con exito";
+
+          new Notification({
+            title: NOTIFICATION_TITLE,
+            body: NOTIFICATION_BODY,
+          }).show();
+
           mainWindow.webContents.send("show_counter", time);
         } catch (error) {
           console.log("Error al obtener tiempo restante!", error);
@@ -175,17 +200,44 @@ const createWindow = (): void => {
         }
       }
     }
+    mainWindow.webContents.send("show_loading", false);
+  }
+
+  async function handleUpdateCounter() {
+    mainWindow.webContents.send("show_loading", true);
+    const username = (await store.get("username")) as string;
+    const uuid = (await store.get("uuid")) as string;
+
+    if (!!username && !!uuid) {
+      const sessionHandler = new Session({
+        username,
+        uuid,
+      });
+
+      const time = await sessionHandler.getRemainingTime();
+      console.log("tiempo restante", time);
+      mainWindow.webContents.send("show_loading", false);
+
+      mainWindow.webContents.send("show_counter", time);
+    } else {
+      mainWindow.webContents.send("show_loading", false);
+      console.log("No se ha podido recuperar datos giardados de la sesion");
+      dialog.showErrorBox(
+        "Error",
+        "No se ha podido recuperar datos giardados de la sesion"
+      );
+    }
   }
 };
 
-ipcMain.on("counter-value", (_event, value) => {
-  console.log("ïn main process counter value", value); // will print value to Node console
-});
+// ipcMain.on("counter-value", (_event, value) => {
+//   console.log("ïn main process counter value", value); // will print value to Node console
+// });
 
-ipcMain.on("synchronous-message", (event, arg) => {
-  console.log(arg); // prints "ping" in the Node console
-  event.returnValue = "pong";
-});
+// ipcMain.on("synchronous-message", (event, arg) => {
+//   console.log(arg); // prints "ping" in the Node console
+//   event.returnValue = "pong";
+// });
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

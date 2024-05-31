@@ -26,16 +26,18 @@
  * ```
  */
 
-import { IpcMainEvent } from "electron";
+import { load } from "cheerio";
 import "../css/index.css";
 
 export interface IElectronAPI {
   sessionLogout: () => Promise<void>;
+  updateCounter: () => Promise<void>;
+  showLoginForm: (callback: (event: any, value: any) => void) => void;
   dogbark(arg0: string, arg1: string): unknown;
   handleLogin: (user: string, password: string) => Promise<void>;
   handleCounter: (callback: (event: any, value: any) => void) => void;
   initCountDown: (callback: (event: any, availableTime: Date) => void) => void;
-  showLoading: (callback: (event: any, value: any) => void) => void;
+  showLoading: (callback: (event: any, value: boolean) => void) => void;
 }
 
 declare global {
@@ -44,14 +46,13 @@ declare global {
   }
 }
 
-const setButton = document.getElementById("btn");
+const loginButton = document.getElementById("btn");
 const userInput = document.getElementById("email") as HTMLInputElement;
 const passwordInput = document.getElementById("password") as HTMLInputElement;
-setButton.addEventListener("click", async () => {
+loginButton.addEventListener("click", async () => {
   const user = userInput.value;
   const password = passwordInput.value;
   window.electronAPI.handleLogin(user, password);
-  console.log("Esto lo llamo desde el front", user, password);
 });
 const form = document.getElementById("form") as HTMLFormElement;
 form.addEventListener("submit", (event) => {
@@ -62,20 +63,27 @@ const logOutBtn = document.getElementById("logout-btn");
 const updateBtn = document.getElementById("update-counter-btn");
 
 updateBtn.addEventListener("click", () => {
-  console.log("actualizar");
+  window.electronAPI.updateCounter();
 });
 
 logOutBtn.addEventListener("click", () => {
-  const div = document.getElementById("counter");
-  // const h1 = document.getElementById('num');
-  div.style.display = "none";
-  form.style.display = "block";
   window.electronAPI.sessionLogout();
 });
+
+function showLoginForm() {
+  // const h1 = document.getElementById('num');
+  const div = document.getElementById("counter");
+  div.style.display = "none";
+  form.style.display = "block";
+}
+
+let intervalId: NodeJS.Timeout | null = null;
+
 const initCounter = (
-  leftHours: number,
-  leftMinutes: number,
-  leftSeconds: number
+  leftHours = 0,
+  leftMinutes = 0,
+  leftSeconds = 0,
+  isInternational = true
 ) => {
   console.log(
     "Result recibido en el renderer initCounter",
@@ -88,39 +96,82 @@ const initCounter = (
     minute = second * 60,
     hour = minute * 60,
     day = hour * 24;
-  const countDown = new Date().getTime() + leftMinutes * 60000;
-  const intervalId = setInterval(() => {
+
+  // Calculate the total countdown time in milliseconds
+  const countDown =
+    new Date().getTime() +
+    leftHours * hour +
+    leftMinutes * minute +
+    leftSeconds * second;
+
+  // Cache DOM elements to avoid repeated DOM queries
+
+  const hoursElement = document.getElementById("data-hours") as HTMLSpanElement;
+  const minutesElement = document.getElementById(
+    "data-minutes"
+  ) as HTMLSpanElement;
+  const secondsElement = document.getElementById(
+    "data-seconds"
+  ) as HTMLSpanElement;
+
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
+
+  intervalId = setInterval(() => {
     const now = new Date().getTime();
     const distance = countDown - now;
 
-    if (document.getElementById("data-days") != null) {
-      (document.getElementById("data-days") as HTMLSpanElement).innerText =
-        String(Math.floor(distance / day));
+    // Update DOM elements if they exist
+    if (hoursElement) {
+      hoursElement.innerText = String(Math.floor((distance % day) / hour));
     }
 
-    if (document.getElementById("data-hours") != null) {
-      document.getElementById("data-hours").innerText = String(
-        Math.floor((distance % day) / hour)
+    if (minutesElement) {
+      minutesElement.innerText = String(Math.floor((distance % hour) / minute));
+    }
+
+    if (secondsElement) {
+      secondsElement.innerText = String(
+        Math.floor((distance % minute) / second)
       );
     }
 
-    if (document.getElementById("data-minutes") != null) {
-      (document.getElementById("data-minutes") as HTMLSpanElement).innerText =
-        String(Math.floor((distance % hour) / minute));
-    }
-
-    if (document.getElementById("data-seconds") != null) {
-      (document.getElementById("data-seconds") as HTMLSpanElement).innerText =
-        String(Math.floor((distance % minute) / second));
-    }
-
+    // Clear interval if countdown is over
     if (distance < 0) {
       clearInterval(intervalId);
+
+      // Optionally, set all elements to zero when the countdown is over
+      if (hoursElement) hoursElement.innerText = "0";
+      if (minutesElement) minutesElement.innerText = "0";
+      if (secondsElement) secondsElement.innerText = "0";
     }
   }, second);
 };
 
-window.electronAPI.handleCounter((event, value) => {
+const resetCounter = () => {
+  // Clear the interval if it exists
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
+  // Cache DOM elements to avoid repeated DOM queries
+  const daysElement = document.getElementById("data-days") as HTMLSpanElement;
+  const hoursElement = document.getElementById("data-hours") as HTMLSpanElement;
+  const minutesElement = document.getElementById(
+    "data-minutes"
+  ) as HTMLSpanElement;
+  const secondsElement = document.getElementById(
+    "data-seconds"
+  ) as HTMLSpanElement;
+
+  // Reset all elements to zero
+  if (daysElement) daysElement.innerText = "0";
+  if (hoursElement) hoursElement.innerText = "0";
+  if (minutesElement) minutesElement.innerText = "0";
+  if (secondsElement) secondsElement.innerText = "0";
+};
+
+window.electronAPI.handleCounter((_event, value) => {
   const div = document.getElementById("counter");
   // const h1 = document.getElementById('num');
   div.style.display = "block";
@@ -129,8 +180,22 @@ window.electronAPI.handleCounter((event, value) => {
   initCounter(hours, minutes, seconds);
 });
 
-window.electronAPI.showLoading((event, value) => {
-  console.log("Loading event", value);
+window.electronAPI.showLoading((_event, value) => {
+  console.log("SHOW LOADING EVENT ", value);
+  const app = document.getElementById("app_container");
+  const loader = document.getElementById("loader");
+  if (value) {
+    app.style.display = "none";
+    loader.style.display = "block";
+  } else {
+    app.style.display = "block";
+    loader.style.display = "none";
+  }
+});
+
+window.electronAPI.showLoginForm(() => {
+  resetCounter();
+  showLoginForm();
 });
 
 // window.electronAPI.initCountDown((event, availableTime: Date) => {

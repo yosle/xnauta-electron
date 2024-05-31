@@ -45,8 +45,8 @@ export default class Nauta {
     };
   };
 
-  public calculateRemainingTime = (credits: number) => {
-    const time = (credits / this.HOUR_RATE).toFixed(2);
+  public calculateRemainingTime = (credits: number, rate: number) => {
+    const time = (credits / rate).toFixed(2);
     const parts = time.toString().split(".");
     const hours = parseInt(parts[0]);
 
@@ -84,25 +84,27 @@ export default class Nauta {
    * @returns
    */
   public async login(username: string, password: string) {
-    console.log(`INIT login with credentials ${username}:${password}`);
+    console.log(`INIT LOGIN with credentials ${username}:${password}`);
     const cookieJar = this.cookieJar;
 
     try {
       let response = await got.get("https://secure.etecsa.net:8443", {
         cookieJar,
       });
-      console.log("response", response);
+      console.log("RESPONSE STATUS: ", response?.statusCode);
       const loginParameters = this.getLoginParams(response.body);
-      console.log("login params ", loginParameters);
+      console.log("LOGIN PARAMS: ", loginParameters);
       response = await got.post("https://secure.etecsa.net:8443/LoginServlet", {
         cookieJar,
+        timeout: 5000,
         form: {
           ...loginParameters,
           username: username,
           password: password,
         },
       });
-      console.log("response in Nauta ", response);
+      if (!response || response instanceof Error)
+        return new Error(`No se ha podido conectar`);
 
       const sessionData = {
         username: username,
@@ -137,12 +139,15 @@ export default class Nauta {
         },
       }
     );
-
+    let rate = this.HOUR_RATE;
+    if (credentials.username.includes("@nauta.co.cu")) {
+      rate = this.NACIONAL_HOUR_RATE;
+    }
     const userInfo = this.extractUserInfo(response.body);
 
     return {
       ...userInfo,
-      remainingTime: this.calculateRemainingTime(userInfo.credits),
+      remainingTime: this.calculateRemainingTime(userInfo.credits, rate),
     };
   }
 }

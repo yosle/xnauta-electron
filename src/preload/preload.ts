@@ -20,8 +20,14 @@ contextBridge.exposeInMainWorld("electronAPI", {
   handleCounter: (
     callback: (event: IpcRendererEvent | IpcMainEvent, value: string) => void
   ) => ipcRenderer.on("show_counter", callback),
+  showLoginForm: (
+    callback: (event: IpcRendererEvent | IpcMainEvent, value: string) => void
+  ) => ipcRenderer.on("show_login", callback),
   sessionLogout: () => {
     return ipcRenderer.send("session_logout");
+  },
+  updateCounter: () => {
+    return ipcRenderer.send("update_counter");
   },
   showLoading: (
     callback: (event: IpcRendererEvent | IpcMainEvent, value: string) => void
