@@ -110,6 +110,10 @@ export default class Nauta {
         username: username,
         uuid: this.extractUUID(response.body),
       };
+
+      if (!sessionData.username || !sessionData.uuid) {
+        return new Error(`No se ha podido conectar`);
+      }
       //save session in store
       this.store.set(sessionData);
       return sessionData;

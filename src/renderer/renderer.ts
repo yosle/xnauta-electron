@@ -28,16 +28,25 @@
 
 import { load } from "cheerio";
 import "../css/index.css";
+import { IpcRendererEvent } from "electron";
 
 export interface IElectronAPI {
   sessionLogout: () => Promise<void>;
   updateCounter: () => Promise<void>;
-  showLoginForm: (callback: (event: any, value: any) => void) => void;
+  showLoginForm: (
+    callback: (event: IpcRendererEvent, value: any) => void
+  ) => void;
   dogbark(arg0: string, arg1: string): unknown;
   handleLogin: (user: string, password: string) => Promise<void>;
-  handleCounter: (callback: (event: any, value: any) => void) => void;
-  initCountDown: (callback: (event: any, availableTime: Date) => void) => void;
-  showLoading: (callback: (event: any, value: boolean) => void) => void;
+  handleCounter: (
+    callback: (event: IpcRendererEvent, value: any) => void
+  ) => void;
+  initCountDown: (
+    callback: (event: IpcRendererEvent, availableTime: Date) => void
+  ) => void;
+  showLoading: (
+    callback: (event: IpcRendererEvent, value: boolean) => void
+  ) => void;
 }
 
 declare global {
@@ -77,35 +86,21 @@ function showLoginForm() {
   form.style.display = "block";
 }
 
-let intervalId: NodeJS.Timeout | null = null;
+let intervalId: number | undefined;
+let originalTime: number;
 
-const initCounter = (
-  leftHours = 0,
-  leftMinutes = 0,
-  leftSeconds = 0,
-  isInternational = true
-) => {
-  console.log(
-    "Result recibido en el renderer initCounter",
-    leftHours,
-    leftMinutes,
-    leftSeconds
-  );
+// Constantes globales para las unidades de tiempo
+const second = 1000;
+const minute = second * 60;
+const hour = minute * 60;
 
-  const second = 1000,
-    minute = second * 60,
-    hour = minute * 60,
-    day = hour * 24;
-
+const initCounter = (leftHours = 0, leftMinutes = 0, leftSeconds = 0) => {
   // Calculate the total countdown time in milliseconds
-  const countDown =
-    new Date().getTime() +
-    leftHours * hour +
-    leftMinutes * minute +
-    leftSeconds * second;
+  originalTime = leftHours * hour + leftMinutes * minute + leftSeconds * second;
+
+  const countDown = new Date().getTime() + originalTime;
 
   // Cache DOM elements to avoid repeated DOM queries
-
   const hoursElement = document.getElementById("data-hours") as HTMLSpanElement;
   const minutesElement = document.getElementById(
     "data-minutes"
@@ -114,17 +109,17 @@ const initCounter = (
     "data-seconds"
   ) as HTMLSpanElement;
 
-  if (intervalId) {
+  if (intervalId !== undefined) {
     clearInterval(intervalId);
   }
 
-  intervalId = setInterval(() => {
+  intervalId = window.setInterval(() => {
     const now = new Date().getTime();
     const distance = countDown - now;
 
     // Update DOM elements if they exist
     if (hoursElement) {
-      hoursElement.innerText = String(Math.floor((distance % day) / hour));
+      hoursElement.innerText = String(Math.floor(distance / hour));
     }
 
     if (minutesElement) {
@@ -151,11 +146,14 @@ const initCounter = (
 
 const resetCounter = () => {
   // Clear the interval if it exists
-  if (intervalId) {
+  if (intervalId !== undefined) {
     clearInterval(intervalId);
   }
+
+  // Reinitialize the counter with the original time
+  const countDown = new Date().getTime() + originalTime;
+
   // Cache DOM elements to avoid repeated DOM queries
-  const daysElement = document.getElementById("data-days") as HTMLSpanElement;
   const hoursElement = document.getElementById("data-hours") as HTMLSpanElement;
   const minutesElement = document.getElementById(
     "data-minutes"
@@ -164,11 +162,35 @@ const resetCounter = () => {
     "data-seconds"
   ) as HTMLSpanElement;
 
-  // Reset all elements to zero
-  if (daysElement) daysElement.innerText = "0";
-  if (hoursElement) hoursElement.innerText = "0";
-  if (minutesElement) minutesElement.innerText = "0";
-  if (secondsElement) secondsElement.innerText = "0";
+  intervalId = window.setInterval(() => {
+    const now = new Date().getTime();
+    const distance = countDown - now;
+
+    // Update DOM elements if they exist
+    if (hoursElement) {
+      hoursElement.innerText = String(Math.floor(distance / hour));
+    }
+
+    if (minutesElement) {
+      minutesElement.innerText = String(Math.floor((distance % hour) / minute));
+    }
+
+    if (secondsElement) {
+      secondsElement.innerText = String(
+        Math.floor((distance % minute) / second)
+      );
+    }
+
+    // Clear interval if countdown is over
+    if (distance < 0) {
+      clearInterval(intervalId);
+
+      // Optionally, set all elements to zero when the countdown is over
+      if (hoursElement) hoursElement.innerText = "0";
+      if (minutesElement) minutesElement.innerText = "0";
+      if (secondsElement) secondsElement.innerText = "0";
+    }
+  }, 1000);
 };
 
 window.electronAPI.handleCounter((_event, value) => {
@@ -181,7 +203,6 @@ window.electronAPI.handleCounter((_event, value) => {
 });
 
 window.electronAPI.showLoading((_event, value) => {
-  console.log("SHOW LOADING EVENT ", value);
   const app = document.getElementById("app_container");
   const loader = document.getElementById("loader");
   if (value) {
@@ -195,10 +216,6 @@ window.electronAPI.showLoading((_event, value) => {
 
 window.electronAPI.showLoginForm(() => {
   resetCounter();
+  clearInterval(intervalId);
   showLoginForm();
 });
-
-// window.electronAPI.initCountDown((event, availableTime: Date) => {
-//   console.log("dfsdfsdf", event, availableTime);
-
-// });

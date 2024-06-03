@@ -1,12 +1,12 @@
 {
-  "name": "XNauta",
-  "productName": "my-new-app",
+  "name": "xnauta",
+  "productName": "xnauta",
   "version": "0.1.0",
   "description": "Cliente Multiplataforma para el Portal de ETECSA",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
-    "package": "electron-forge package",
+    "package": "electron-forge package executableName=xnauta",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx ."

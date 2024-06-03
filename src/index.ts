@@ -34,9 +34,10 @@ const nauta = new Nauta(store, cookieJar);
 const createWindow = (): void => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
+    icon: "/assets/icon.png",
     show: false,
     height: 400,
-    width: 800,
+    width: 600,
     maximizable: false,
     backgroundColor: "#1e1e1e",
     resizable: false,
@@ -56,7 +57,7 @@ const createWindow = (): void => {
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   app.whenReady().then(() => {
     ipcMain.on("login", handleLogin);
@@ -107,7 +108,9 @@ const createWindow = (): void => {
       mainWindow.webContents.send("show_loading", true);
       const session = await nauta.login(user, password);
       if (!session || session instanceof Error) {
-        dialog.showErrorBox("Error", `No se ha podido conectar`);
+        dialog.showErrorBox("Error", `No se ha podido conectar a ETECSA`);
+        mainWindow.webContents.send("show_loading", false);
+        return;
       }
       const { username, uuid } = session;
       const sessionHandler = new Session({
@@ -115,8 +118,14 @@ const createWindow = (): void => {
         uuid,
       });
       const time = await sessionHandler.getRemainingTime();
+      if (!time || time instanceof Error) {
+        mainWindow.webContents.send("show_loading", false);
+        mainWindow.webContents.send("show_login");
+        dialog.showErrorBox("Error", `No se ha podido iniciar sesion`);
+        return;
+      }
       mainWindow.webContents.send("show_loading", false);
-      console.log("tiempo restante", time);
+      console.log("TIEMPO RESTANTE: ", time);
       mainWindow.webContents.send("show_counter", time);
     } catch (error) {
       mainWindow.webContents.send("show_loading", false);

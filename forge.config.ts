@@ -15,7 +15,13 @@ const config: ForgeConfig = {
     // new MakerSquirrel({}),
     // new MakerZIP({}, ["darwin"]),
     // new MakerRpm({}),
-    new MakerDeb({}),
+    new MakerDeb({
+      options: {
+        icon: "./src/assets/xnauta.png",
+        maintainer: "Yosleivy Baez",
+        homepage: "https://www.xnauta.com",
+      },
+    }),
   ],
   plugins: [
     new WebpackPlugin({

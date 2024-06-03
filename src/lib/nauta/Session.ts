@@ -5,7 +5,7 @@ interface SessionData {
   username: string;
 }
 const parseTime = (value: string) => {
-  const match = /([\d]{2}):([\d]{2}):([\d]{2})/.exec(value);
+  const match = /(\d+):([\d]{2}):([\d]{2})/.exec(value);
 
   return {
     hours: parseInt(match[1]),
@@ -35,7 +35,7 @@ export default class Session {
         },
       }
     );
-
+    console.log("parse time response: ", response.body);
     return parseTime(response.body);
   }
 
