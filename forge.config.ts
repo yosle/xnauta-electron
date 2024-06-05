@@ -9,10 +9,18 @@ import { mainConfig } from "./webpack.main.config";
 import { rendererConfig } from "./webpack.renderer.config";
 
 const config: ForgeConfig = {
-  packagerConfig: {},
+  packagerConfig: {
+    appVersion: "0.0.1",
+    icon: "./src/assets/xnauta",
+    name: "xnauta",
+  },
   rebuildConfig: {},
   makers: [
-    // new MakerSquirrel({}),
+    new MakerSquirrel({
+      authors: "Yosleivy Baez",
+      description: "Connect and manage ETECSA services",
+      name: "xnauta",
+    }),
     // new MakerZIP({}, ["darwin"]),
     // new MakerRpm({}),
     new MakerDeb({
@@ -20,6 +28,8 @@ const config: ForgeConfig = {
         icon: "./src/assets/xnauta.png",
         maintainer: "Yosleivy Baez",
         homepage: "https://www.xnauta.com",
+        productName: "xnauta",
+        description: "Connect and manage ETECSA services",
       },
     }),
   ],

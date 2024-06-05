@@ -34,7 +34,7 @@ const nauta = new Nauta(store, cookieJar);
 const createWindow = (): void => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    icon: "/assets/icon.png",
+    icon: "./src/assets/icon.png",
     show: false,
     height: 400,
     width: 600,
@@ -108,7 +108,10 @@ const createWindow = (): void => {
       mainWindow.webContents.send("show_loading", true);
       const session = await nauta.login(user, password);
       if (!session || session instanceof Error) {
-        dialog.showErrorBox("Error", `No se ha podido conectar a ETECSA`);
+        dialog.showErrorBox(
+          "Error de conexión",
+          `No se ha podido conectar con ETECSA. Comprueba que no estas usando un VPN o estas detrás de un proxy.`
+        );
         mainWindow.webContents.send("show_loading", false);
         return;
       }
@@ -174,8 +177,8 @@ const createWindow = (): void => {
       console.log("Try to retrieve previous session");
       const retrieveSession = dialog.showMessageBoxSync({
         type: "question",
-        message:
-          "Hay una session guardada en la aplicacion de la ultima vez que se uso. Desea intentar recuperarla?",
+        message: `Hay una session guardada en la aplicacion de la ultima vez que se uso. 
+          Desea intentar recuperarla? Toque No para iniciar con otra cuenta.`,
         buttons: ["Si", "No"],
         title: "Recuperar sesion",
       });
@@ -207,6 +210,11 @@ const createWindow = (): void => {
           // mejorar esto despues
           store.clear();
         }
+      }
+
+      if (retrieveSession === 1) {
+        store.delete("username");
+        store.delete("uuid");
       }
     }
     mainWindow.webContents.send("show_loading", false);
