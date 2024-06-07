@@ -7,6 +7,8 @@ import {
   IpcMainEvent,
   dialog,
   Notification,
+  Tray,
+  Menu,
 } from "electron";
 import ElectronStore from "electron-store";
 
@@ -20,6 +22,8 @@ crashReporter.start({ submitURL: "https://t.me/UtilesSaldo" });
 // whether you're running in development or production).
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+const APP_VERSION_NUMBER = "0.0.1";
+const NOTIFICATION_TITLE = "X Nauta";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
@@ -30,6 +34,9 @@ if (require("electron-squirrel-startup")) {
 const store = new ElectronStore();
 const cookieJar = new CookieJar();
 const nauta = new Nauta(store, cookieJar);
+
+let isQuitting = false;
+let isSessionActive = false;
 
 const createWindow = (): void => {
   // Create the browser window.
@@ -59,10 +66,67 @@ const createWindow = (): void => {
   // Open the DevTools.
   // mainWindow.webContents.openDevTools();
 
+  mainWindow.on("close", (event) => {
+    if (!isQuitting) {
+      event.preventDefault();
+      mainWindow?.hide();
+    }
+  });
+
+  mainWindow.on("minimize", (event: IpcMainEvent) => {
+    event.preventDefault();
+    mainWindow?.hide();
+  });
+
   app.whenReady().then(() => {
     ipcMain.on("login", handleLogin);
     ipcMain.on("session_logout", handleSessionLogout);
     ipcMain.on("update_counter", handleUpdateCounter);
+
+    const tray = new Tray("./src/assets/xnauta.png");
+    const contextMenu = Menu.buildFromTemplate([
+      {
+        label: "Actualizar",
+        type: "normal",
+        click: () => handleUpdateCounter,
+        visible: isSessionActive,
+      },
+      {
+        label: "Abrir Ventana",
+        type: "normal",
+        click: () => {
+          mainWindow?.show();
+        },
+      },
+      {
+        label: "Minimizar",
+        type: "normal",
+        click: () => {
+          mainWindow?.hide();
+        },
+      },
+      { label: "---", type: "separator" },
+      {
+        label: "Salir",
+        type: "normal",
+        click: () => {
+          isQuitting = true;
+          app.quit();
+        },
+      },
+    ]);
+    tray.setToolTip(`XNauta ${APP_VERSION_NUMBER}`);
+    tray.setContextMenu(contextMenu);
+
+    tray.on("double-click", () => {
+      mainWindow?.show();
+    });
+
+    // Make a change to the context menu
+    contextMenu.items[0].label = "XNauta Internacional: 12h 07m 56s";
+
+    // Call this again for Linux because we modified the context menu
+    tray.setContextMenu(contextMenu);
   });
 
   async function handleLogin(
@@ -124,6 +188,7 @@ const createWindow = (): void => {
       if (!time || time instanceof Error) {
         mainWindow.webContents.send("show_loading", false);
         mainWindow.webContents.send("show_login");
+        isSessionActive = true;
         dialog.showErrorBox("Error", `No se ha podido iniciar sesion`);
         return;
       }
@@ -131,6 +196,7 @@ const createWindow = (): void => {
       console.log("TIEMPO RESTANTE: ", time);
       mainWindow.webContents.send("show_counter", time);
     } catch (error) {
+      isSessionActive = false;
       mainWindow.webContents.send("show_loading", false);
       dialog.showErrorBox("Error", `Error de conexion: ${error.message}`);
     }
@@ -138,6 +204,7 @@ const createWindow = (): void => {
   }
 
   async function handleSessionLogout() {
+    isSessionActive = false;
     mainWindow.webContents.send("show_loading", true);
     const username = (await store.get("username")) as string;
     const uuid = (await store.get("uuid")) as string;
@@ -156,12 +223,10 @@ const createWindow = (): void => {
     } else {
       store.clear();
       mainWindow.webContents.send("show_loading", false);
-      const NOTIFICATION_TITLE = "X Nauta";
-      const NOTIFICATION_BODY = "Sesion cerrada con exito";
 
       new Notification({
         title: NOTIFICATION_TITLE,
-        body: NOTIFICATION_BODY,
+        body: "Sesion cerrada con exito",
       }).show();
       mainWindow.webContents.send("show_login");
     }
@@ -199,9 +264,10 @@ const createWindow = (): void => {
             title: NOTIFICATION_TITLE,
             body: NOTIFICATION_BODY,
           }).show();
-
+          isSessionActive = true;
           mainWindow.webContents.send("show_counter", time);
         } catch (error) {
+          isSessionActive = false;
           console.log("Error al obtener tiempo restante!", error);
           dialog.showErrorBox(
             "Error",
@@ -266,7 +332,7 @@ app.on("ready", createWindow);
 // explicitly with Cmd + Q.
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
-    app.quit();
+    // app.quit();
   }
 });
 
