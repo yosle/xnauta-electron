@@ -9,8 +9,11 @@ import {
   Notification,
   Tray,
   Menu,
+  nativeTheme,
+  nativeImage,
 } from "electron";
 import ElectronStore from "electron-store";
+import path from "path";
 
 import Nauta from "./lib/nauta/Nauta";
 import Session from "./lib/nauta/Session";
@@ -55,7 +58,9 @@ const createWindow = (): void => {
     },
   });
 
+  Menu.setApplicationMenu(null);
   mainWindow.removeMenu();
+  nativeTheme.themeSource = "dark";
 
   mainWindow.once("ready-to-show", () => {
     mainWindow.show();
@@ -82,8 +87,10 @@ const createWindow = (): void => {
     ipcMain.on("login", handleLogin);
     ipcMain.on("session_logout", handleSessionLogout);
     ipcMain.on("update_counter", handleUpdateCounter);
-
-    const tray = new Tray("./src/assets/xnauta.png");
+    const icon = nativeImage.createFromPath(
+      path.join("./src/assets/xnauta.png")
+    );
+    const tray = new Tray(icon);
     const contextMenu = Menu.buildFromTemplate([
       {
         label: "Actualizar",

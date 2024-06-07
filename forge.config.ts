@@ -30,6 +30,7 @@ const config: ForgeConfig = {
         homepage: "https://www.xnauta.com",
         productName: "xnauta",
         description: "Connect and manage ETECSA services",
+        desktopTemplate: "./src/assets/xnauta.desktop",
       },
     }),
   ],
