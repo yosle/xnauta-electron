@@ -8,6 +8,7 @@ export default class Nauta {
   cookieJar: CookieJar;
   readonly HOUR_RATE = 12.5;
   readonly NACIONAL_HOUR_RATE = 2.5;
+  readonly MAX_TIMEOUT_MILISECONDS = 10000;
 
   constructor(storeInstance: Store, cookieJar: CookieJar) {
     // const store = new Store({
@@ -96,7 +97,7 @@ export default class Nauta {
       console.log("LOGIN PARAMS: ", loginParameters);
       response = await got.post("https://secure.etecsa.net:8443/LoginServlet", {
         cookieJar,
-        timeout: 5000,
+        timeout: this.MAX_TIMEOUT_MILISECONDS,
         form: {
           ...loginParameters,
           username: username,
@@ -128,6 +129,7 @@ export default class Nauta {
 
     let response = await got.get("https://secure.etecsa.net:8443", {
       cookieJar,
+      timeout: this.MAX_TIMEOUT_MILISECONDS,
     });
 
     const loginParameters = this.getLoginParams(response.body);
@@ -141,6 +143,7 @@ export default class Nauta {
           username: credentials.username,
           password: credentials.password,
         },
+        timeout: this.MAX_TIMEOUT_MILISECONDS,
       }
     );
     let rate = this.HOUR_RATE;
