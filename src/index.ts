@@ -87,8 +87,14 @@ const createWindow = (): void => {
     ipcMain.on("login", handleLogin);
     ipcMain.on("session_logout", handleSessionLogout);
     ipcMain.on("update_counter", handleUpdateCounter);
-    const icon = nativeImage.createFromPath(
-      path.join("./src/assets/xnauta.png")
+    const iconPath = app.isPackaged
+      ? path.join(__dirname, "..", "..", "..", "xnauta.png")
+      : path.join("src", "assets", "xnauta.png");
+    const icon = nativeImage.createFromPath(iconPath);
+
+    console.log(
+      "testing the path ",
+      path.join(__dirname, "..", "..", "..", "xnauta.png")
     );
     const tray = new Tray(icon);
     const contextMenu = Menu.buildFromTemplate([

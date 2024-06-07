@@ -13,7 +13,9 @@ const config: ForgeConfig = {
     appVersion: "0.0.1",
     icon: "./src/assets/xnauta",
     name: "xnauta",
+    extraResource: ["./src/assets/xnauta.png", "./src/assets/xnauta.ico"],
   },
+
   rebuildConfig: {},
   makers: [
     new MakerSquirrel({
