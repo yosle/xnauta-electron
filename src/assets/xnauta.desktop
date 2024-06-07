@@ -5,21 +5,8 @@ Name=XNauta
 GenericName=Nauta Account Manager
 Comment=Manage your Nauta account
 Icon=xnauta
+Exec=xnauta
 Categories=Internet;
 
-Actions=Actualizar;Abrir;Cerrar
 
-[Desktop Action PlayPause]
-Name=XNauta
-Exec=xnauta
-OnlyShowIn=Unity;
 
-[Desktop Action Next]
-Name=Next
-Exec=xnauta 
-OnlyShowIn=Unity;
-
-[Desktop Action Previous]
-Name=Previous
-Exec=xnauta
-OnlyShowIn=Unity;
