@@ -8,7 +8,7 @@ export default class Nauta {
   cookieJar: CookieJar;
   readonly HOUR_RATE = 12.5;
   readonly NACIONAL_HOUR_RATE = 2.5;
-  readonly MAX_TIMEOUT_MILISECONDS = 10000;
+  readonly MAX_TIMEOUT_MILISECONDS = 30000;
 
   constructor(storeInstance: Store, cookieJar: CookieJar) {
     // const store = new Store({
