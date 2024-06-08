@@ -169,6 +169,7 @@ button {
   cursor: pointer;
   font-size: 16px;
   outline: none;
+  margin: 4px;
 }
 
 button:hover {
@@ -268,16 +269,35 @@ a:hover {
   box-shadow: 0 0 60px 15px #25b09b;
   transform: translate(-80px);
   clip-path: inset(0);
-  animation:
-    l4-1 0.5s ease-in-out infinite alternate,
-    l4-2 1s   ease-in-out infinite;
+  animation: l4-1 0.5s ease-in-out infinite alternate,
+    l4-2 1s ease-in-out infinite;
 }
 @keyframes l4-1 {
-  100% {transform: translateX(80px)}
+  100% {
+    transform: translateX(80px);
+  }
 }
 @keyframes l4-2 {
-   33% {clip-path: inset(0 0 0 -100px)}
-   50% {clip-path: inset(0 0 0 0)     }
-   83% {clip-path: inset(0 -100px 0 0)}
+  33% {
+    clip-path: inset(0 0 0 -100px);
+  }
+  50% {
+    clip-path: inset(0 0 0 0);
+  }
+  83% {
+    clip-path: inset(0 -100px 0 0);
+  }
 }
 
+.value {
+  display: flex;
+  justify-content: center;
+  justify-items: center;
+  font-size: 48px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.counter,
+.suffix {
+  padding: 12px;
+}
