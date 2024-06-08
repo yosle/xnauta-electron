@@ -186,9 +186,9 @@ const resetCounter = () => {
       clearInterval(intervalId);
 
       // Optionally, set all elements to zero when the countdown is over
-      if (hoursElement) hoursElement.innerText = "0";
-      if (minutesElement) minutesElement.innerText = "0";
-      if (secondsElement) secondsElement.innerText = "0";
+      if (hoursElement) hoursElement.innerText = "00";
+      if (minutesElement) minutesElement.innerText = "00";
+      if (secondsElement) secondsElement.innerText = "00";
     }
   }, 1000);
 };

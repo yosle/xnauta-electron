@@ -62,6 +62,11 @@ const createWindow = (): void => {
   mainWindow.removeMenu();
   nativeTheme.themeSource = "dark";
 
+  const iconPath = app.isPackaged
+    ? path.join(__dirname, "..", "..", "..", "xnauta.png")
+    : path.join("src", "assets", "xnauta.png");
+  const icon = nativeImage.createFromPath(iconPath);
+
   mainWindow.once("ready-to-show", () => {
     mainWindow.show();
     checkPreviousSession();
@@ -75,27 +80,29 @@ const createWindow = (): void => {
     if (!isQuitting) {
       event.preventDefault();
       mainWindow?.hide();
+      new Notification({
+        title: NOTIFICATION_TITLE,
+        icon: icon,
+        body: "XNauta esta corriendo en segundo plano. Click en la tray bar para ver opciones",
+      }).show();
     }
   });
 
   mainWindow.on("minimize", (event: IpcMainEvent) => {
     event.preventDefault();
     mainWindow?.hide();
+    new Notification({
+      title: NOTIFICATION_TITLE,
+      icon: icon,
+      body: "XNauta esta corriendo en segundo plano. Click en la tray bar para ver opciones",
+    }).show();
   });
 
   app.whenReady().then(() => {
     ipcMain.on("login", handleLogin);
     ipcMain.on("session_logout", handleSessionLogout);
     ipcMain.on("update_counter", handleUpdateCounter);
-    const iconPath = app.isPackaged
-      ? path.join(__dirname, "..", "..", "..", "xnauta.png")
-      : path.join("src", "assets", "xnauta.png");
-    const icon = nativeImage.createFromPath(iconPath);
 
-    console.log(
-      "testing the path ",
-      path.join(__dirname, "..", "..", "..", "xnauta.png")
-    );
     const tray = new Tray(icon);
     const contextMenu = Menu.buildFromTemplate([
       {
@@ -311,17 +318,16 @@ const createWindow = (): void => {
       });
 
       const time = await sessionHandler.getRemainingTime();
-      console.log("tiempo restante", time);
+      console.log("Obteniendo tiempo restante", time);
       mainWindow.webContents.send("show_loading", false);
-
       mainWindow.webContents.send("show_counter", time);
     } else {
       mainWindow.webContents.send("show_loading", false);
-      console.log("No se ha podido recuperar datos giardados de la sesion");
       dialog.showErrorBox(
         "Error",
-        "No se ha podido recuperar datos giardados de la sesion"
+        "No se ha podido recuperar la sesion. Ingrese nuevamente."
       );
+      mainWindow.webContents.send("show_login");
     }
   }
 };
