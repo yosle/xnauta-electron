@@ -265,7 +265,7 @@ a:hover {
 .loader {
   width: 40px;
   height: 40px;
-  --c: no-repeat linear-gradient(orange 0 0);
+  --c: no-repeat linear-gradient(rgb(55, 58, 237) 0 0);
   background: var(--c), var(--c), var(--c), var(--c);
   background-size: 21px 21px;
   animation: l5 1.5s infinite cubic-bezier(0.3, 1, 0, 1);
