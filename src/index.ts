@@ -14,6 +14,7 @@ import {
 } from "electron";
 import ElectronStore from "electron-store";
 import path from "path";
+import minimist from "minimist";
 
 import Nauta from "./lib/nauta/Nauta";
 import Session from "./lib/nauta/Session";
@@ -27,9 +28,14 @@ declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 const APP_VERSION_NUMBER = "0.0.1";
 const NOTIFICATION_TITLE = "X Nauta";
-
+const args = minimist(process.argv.slice(1));
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
+  app.quit();
+}
+
+if (args.version) {
+  console.log(APP_VERSION_NUMBER);
   app.quit();
 }
 
@@ -75,7 +81,6 @@ const createWindow = (): void => {
       label: "Mostar/Ocultar",
       type: "normal",
       click: () => {
-        console.log("esta la ventana visible", mainWindow.isVisible);
         if (mainWindow.isVisible()) {
           mainWindow?.hide();
         } else {
@@ -98,7 +103,6 @@ const createWindow = (): void => {
       label: "Mostar/Ocultar",
       type: "normal",
       click: () => {
-        console.log("esta la ventana visible", mainWindow.isVisible);
         if (mainWindow.isVisible()) {
           mainWindow?.hide();
         } else {

@@ -26,6 +26,7 @@
     "@electron-forge/plugin-webpack": "^6.1.1",
     "@types/cheerio": "^0.22.31",
     "@types/electron-store": "^3.2.0",
+    "@types/minimist": "^1.2.5",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
@@ -48,6 +49,7 @@
     "electron-store": "^8.1.0",
     "form-data": "^4.0.0",
     "got": "11.8.2",
+    "minimist": "^1.2.8",
     "tough-cookie": "^4.1.2"
   },
   "plugins": [
