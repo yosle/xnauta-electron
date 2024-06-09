@@ -41,10 +41,16 @@ const nauta = new Nauta(store, cookieJar);
 let isQuitting = false;
 let isSessionActive = false;
 
+// assets path is different once app is packed!
+const iconPath = app.isPackaged
+  ? path.join(__dirname, "..", "..", "..", "xnauta.png")
+  : path.join("src", "assets", "xnauta.png");
+const icon = nativeImage.createFromPath(iconPath);
+
 const createWindow = (): void => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    icon: "./src/assets/icon.png",
+    icon: icon,
     show: false,
     height: 400,
     width: 600,
@@ -62,10 +68,66 @@ const createWindow = (): void => {
   mainWindow.removeMenu();
   nativeTheme.themeSource = "dark";
 
-  const iconPath = app.isPackaged
-    ? path.join(__dirname, "..", "..", "..", "xnauta.png")
-    : path.join("src", "assets", "xnauta.png");
-  const icon = nativeImage.createFromPath(iconPath);
+  const tray = new Tray(icon);
+  // TODO: refractor tray menu logic later
+  const contextMenuDisconnected = Menu.buildFromTemplate([
+    {
+      label: "Mostar/Ocultar",
+      type: "normal",
+      click: () => {
+        console.log("esta la ventana visible", mainWindow.isVisible);
+        if (mainWindow.isVisible()) {
+          mainWindow?.hide();
+        } else {
+          mainWindow?.show();
+        }
+      },
+    },
+    { label: "---", type: "separator" },
+    {
+      label: "Salir",
+      type: "normal",
+      click: () => {
+        isQuitting = true;
+        app.quit();
+      },
+    },
+  ]);
+  const contextMenuConnected = Menu.buildFromTemplate([
+    {
+      label: "Mostar/Ocultar",
+      type: "normal",
+      click: () => {
+        console.log("esta la ventana visible", mainWindow.isVisible);
+        if (mainWindow.isVisible()) {
+          mainWindow?.hide();
+        } else {
+          mainWindow?.show();
+        }
+      },
+    },
+    {
+      label: "Actualizar tiempo",
+      type: "normal",
+      click: () => handleUpdateCounter,
+      visible: isSessionActive,
+    },
+    { label: "---", type: "separator" },
+    {
+      label: "Desconectar",
+      type: "normal",
+      click: () => handleSessionLogout,
+      visible: isSessionActive,
+    },
+    {
+      label: "Salir",
+      type: "normal",
+      click: () => {
+        isQuitting = true;
+        app.quit();
+      },
+    },
+  ]);
 
   mainWindow.once("ready-to-show", () => {
     mainWindow.show();
@@ -103,50 +165,20 @@ const createWindow = (): void => {
     ipcMain.on("session_logout", handleSessionLogout);
     ipcMain.on("update_counter", handleUpdateCounter);
 
-    const tray = new Tray(icon);
-    const contextMenu = Menu.buildFromTemplate([
-      {
-        label: "Actualizar",
-        type: "normal",
-        click: () => handleUpdateCounter,
-        visible: isSessionActive,
-      },
-      {
-        label: "Abrir Ventana",
-        type: "normal",
-        click: () => {
-          mainWindow?.show();
-        },
-      },
-      {
-        label: "Minimizar",
-        type: "normal",
-        click: () => {
-          mainWindow?.hide();
-        },
-      },
-      { label: "---", type: "separator" },
-      {
-        label: "Salir",
-        type: "normal",
-        click: () => {
-          isQuitting = true;
-          app.quit();
-        },
-      },
-    ]);
     tray.setToolTip(`XNauta ${APP_VERSION_NUMBER}`);
-    tray.setContextMenu(contextMenu);
+    tray.setContextMenu(contextMenuDisconnected);
 
+    // Windows only
     tray.on("double-click", () => {
       mainWindow?.show();
     });
 
     // Make a change to the context menu
-    contextMenu.items[0].label = "XNauta Internacional: 12h 07m 56s";
+    contextMenuDisconnected.items[0].label =
+      "XNauta Internacional: 12h 07m 56s";
 
     // Call this again for Linux because we modified the context menu
-    tray.setContextMenu(contextMenu);
+    tray.setContextMenu(contextMenuDisconnected);
   });
 
   async function handleLogin(
@@ -163,7 +195,6 @@ const createWindow = (): void => {
       return;
     }
     if (!user.includes("@nauta.co.cu") && !user.includes("@nauta.com.cu")) {
-      console.log("Preguntando al usuario el tipo de cuenta");
       const resultClicked = dialog.showMessageBoxSync({
         type: "question",
         message: "Seleccione tipo de cuenta",
@@ -171,24 +202,12 @@ const createWindow = (): void => {
         title: "Elija una de las opciones que se muestran abajo",
       });
 
-      if (resultClicked == 0) {
-        console.log("Seleccionado navegacion internacional");
-        user += "@nauta.com.cu";
-      }
-
-      if (resultClicked == 1) {
-        console.log("Seleccionado navegacion nacional");
-        user += "@nauta.co.cu";
-      }
-
-      if (resultClicked == 2) {
-        console.log("Seleccionado cancelar");
-        return;
-      }
+      if (resultClicked == 0) user += "@nauta.com.cu";
+      if (resultClicked == 1) user += "@nauta.co.cu";
+      if (resultClicked == 2) return;
     }
 
     try {
-      // show loading
       mainWindow.webContents.send("show_loading", true);
       const session = await nauta.login(user, password);
       if (!session || session instanceof Error) {
@@ -215,16 +234,17 @@ const createWindow = (): void => {
       mainWindow.webContents.send("show_loading", false);
       console.log("TIEMPO RESTANTE: ", time);
       mainWindow.webContents.send("show_counter", time);
+      tray.setContextMenu(contextMenuConnected);
     } catch (error) {
       isSessionActive = false;
       mainWindow.webContents.send("show_loading", false);
       dialog.showErrorBox("Error", `Error de conexion: ${error.message}`);
     }
-    // mainWindow.webContents.send("show-counter", { name: "Oleg" });
   }
 
   async function handleSessionLogout() {
     isSessionActive = false;
+    tray.setContextMenu(contextMenuDisconnected);
     mainWindow.webContents.send("show_loading", true);
     const username = (await store.get("username")) as string;
     const uuid = (await store.get("uuid")) as string;
@@ -232,6 +252,7 @@ const createWindow = (): void => {
       dialog.showErrorBox("Error", "No se encontro ninguna sesion guardada.");
       return;
     }
+
     const sessionHandler = new Session({
       username,
       uuid,
@@ -239,7 +260,10 @@ const createWindow = (): void => {
     const result = await sessionHandler.logout();
     if (!result) {
       mainWindow.webContents.send("show_loading", true);
-      dialog.showErrorBox("Error", "No se puedo cerrar sesion.");
+      dialog.showErrorBox(
+        "Error",
+        "No se puedo cerrar sesion de forma segura. Desconecte su dispositivo de la red WiFi"
+      );
     } else {
       store.clear();
       mainWindow.webContents.send("show_loading", false);
@@ -259,7 +283,7 @@ const createWindow = (): void => {
     const uuid = (await store.get("uuid")) as string;
 
     if (!!username && !!uuid) {
-      console.log("Try to retrieve previous session");
+      console.log("RETRIEVE PREVIOUS SESSION");
       const retrieveSession = dialog.showMessageBoxSync({
         type: "question",
         message: `Hay una session guardada en la aplicacion de la ultima vez que se uso. 
@@ -275,10 +299,10 @@ const createWindow = (): void => {
         });
         try {
           const time = await sessionHandler.getRemainingTime();
-          console.log("tiempo restante", time);
+          console.log("REMANING TIME", time);
+          tray.setContextMenu(contextMenuConnected);
 
-          const NOTIFICATION_TITLE = "X Nauta";
-          const NOTIFICATION_BODY = "Sesion recuperada con exito";
+          const NOTIFICATION_BODY = `Sesión ${username} recuperada con éxito`;
 
           new Notification({
             title: NOTIFICATION_TITLE,
@@ -288,7 +312,7 @@ const createWindow = (): void => {
           mainWindow.webContents.send("show_counter", time);
         } catch (error) {
           isSessionActive = false;
-          console.log("Error al obtener tiempo restante!", error);
+          console.log("Error al obtener tiempo restante", error);
           dialog.showErrorBox(
             "Error",
             "No se puede recuperar la sesion activa previamente guardada."
@@ -331,15 +355,6 @@ const createWindow = (): void => {
     }
   }
 };
-
-// ipcMain.on("counter-value", (_event, value) => {
-//   console.log("ïn main process counter value", value); // will print value to Node console
-// });
-
-// ipcMain.on("synchronous-message", (event, arg) => {
-//   console.log(arg); // prints "ping" in the Node console
-//   event.returnValue = "pong";
-// });
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
