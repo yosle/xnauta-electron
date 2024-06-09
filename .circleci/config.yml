@@ -41,6 +41,11 @@ jobs:
       - attach_workspace:
           at: /workspace
       - run:
+          name: "Install Node.js"
+          command: |
+            curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+            sudo apt-get install -y nodejs
+      - run:
           name: "Publish Release on GitHub"
           command: |
             VERSION=$(node -p "require('./package.json').version")
