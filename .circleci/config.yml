@@ -1,7 +1,7 @@
 version: 2.1
 jobs:
   build:
-    working_directory: ~/repo
+    working_directory: ~/xnauta-electron
     docker:
       - image: cimg/node:20.12.2
     steps:
@@ -29,4 +29,4 @@ jobs:
           command: npm run make
 
       - store_artifacts:
-          path: ~/repo/out/make
+          path: ~/xnauta-electron/out/make
