@@ -1,4 +1,5 @@
 version: 2.1
+
 jobs:
   build:
     working_directory: ~/xnauta-electron
@@ -19,7 +20,6 @@ jobs:
           command: |
             sudo apt-get update -y
             sudo apt-get install -y dpkg fakeroot
-
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
@@ -27,17 +27,30 @@ jobs:
       - run:
           name: Generate Builds
           command: npm run make
-
       - store_artifacts:
           path: ~/xnauta-electron/out/make
+      - persist_to_workspace:
+          root: ~/xnauta-electron/out/make
+          paths:
+            - .
+
+  publish-github-release:
+    docker:
+      - image: cibuilds/github:0.10
+    steps:
+      - attach_workspace:
+          at: /workspace
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            VERSION=$(node -p "require('./package.json').version")
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} /workspace/
+
+workflows:
+  version: 2
+  build_and_release:
+    jobs:
+      - build
       - publish-github-release:
-          docker:
-            - image: cibuilds/github:0.10
-        steps:
-          - attach_workspace:
-              at: ./artifacts
-          - run:
-              name: "Publish Release on GitHub"
-              command: |
-                VERSION=$(my-binary --version)
-                ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./artifacts/
+          requires:
+            - build
