@@ -76,28 +76,7 @@ const createWindow = (): void => {
 
   const tray = new Tray(icon);
   // TODO: refractor tray menu logic later
-  const contextMenuDisconnected = Menu.buildFromTemplate([
-    {
-      label: "Mostar/Ocultar",
-      type: "normal",
-      click: () => {
-        if (mainWindow.isVisible()) {
-          mainWindow?.hide();
-        } else {
-          mainWindow?.show();
-        }
-      },
-    },
-    { label: "---", type: "separator" },
-    {
-      label: "Salir",
-      type: "normal",
-      click: () => {
-        isQuitting = true;
-        app.quit();
-      },
-    },
-  ]);
+
   const contextMenuConnected = Menu.buildFromTemplate([
     {
       label: "Mostar/Ocultar",
@@ -113,14 +92,14 @@ const createWindow = (): void => {
     {
       label: "Actualizar tiempo",
       type: "normal",
-      click: () => handleUpdateCounter,
+      click: () => handleUpdateCounter(),
       visible: isSessionActive,
     },
     { label: "---", type: "separator" },
     {
       label: "Desconectar",
       type: "normal",
-      click: () => handleSessionLogout,
+      click: () => handleSessionLogout(),
       visible: isSessionActive,
     },
     {
@@ -170,19 +149,17 @@ const createWindow = (): void => {
     ipcMain.on("update_counter", handleUpdateCounter);
 
     tray.setToolTip(`XNauta ${APP_VERSION_NUMBER}`);
-    tray.setContextMenu(contextMenuDisconnected);
+    tray.setContextMenu(contextMenuConnected);
 
     // Windows only
     tray.on("double-click", () => {
       mainWindow?.show();
     });
 
-    // Make a change to the context menu
-    contextMenuDisconnected.items[0].label =
-      "XNauta Internacional: 12h 07m 56s";
-
     // Call this again for Linux because we modified the context menu
-    tray.setContextMenu(contextMenuDisconnected);
+    contextMenuConnected.items[1].visible = false;
+    contextMenuConnected.items[3].visible = false;
+    tray.setContextMenu(contextMenuConnected);
   });
 
   async function handleLogin(
@@ -238,6 +215,8 @@ const createWindow = (): void => {
       mainWindow.webContents.send("show_loading", false);
       console.log("TIEMPO RESTANTE: ", time);
       mainWindow.webContents.send("show_counter", time);
+      contextMenuConnected.items[1].visible = true;
+      contextMenuConnected.items[3].visible = true;
       tray.setContextMenu(contextMenuConnected);
     } catch (error) {
       isSessionActive = false;
@@ -248,7 +227,10 @@ const createWindow = (): void => {
 
   async function handleSessionLogout() {
     isSessionActive = false;
-    tray.setContextMenu(contextMenuDisconnected);
+    contextMenuConnected.items[1].visible = false;
+    contextMenuConnected.items[3].visible = false;
+    tray.setContextMenu(contextMenuConnected);
+
     mainWindow.webContents.send("show_loading", true);
     const username = (await store.get("username")) as string;
     const uuid = (await store.get("uuid")) as string;
@@ -304,6 +286,8 @@ const createWindow = (): void => {
         try {
           const time = await sessionHandler.getRemainingTime();
           console.log("REMANING TIME", time);
+          contextMenuConnected.items[1].visible = true;
+          contextMenuConnected.items[3].visible = true;
           tray.setContextMenu(contextMenuConnected);
 
           const NOTIFICATION_BODY = `Sesión ${username} recuperada con éxito`;
