@@ -27,8 +27,7 @@ jobs:
 
       - name: Create release and upload artifact
         uses: softprops/action-gh-release@v1
-        with:
-          tag: latest
+        with:          
           files: out/make/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
