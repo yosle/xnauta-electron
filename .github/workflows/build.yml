@@ -27,7 +27,8 @@ jobs:
 
       - name: Create release and upload artifact
         uses: softprops/action-gh-release@v1
-        with:          
+        with: 
+          tag_name: release
           files: out/make/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -57,6 +58,7 @@ jobs:
       - name: Create release and upload artifact
         uses: softprops/action-gh-release@v1        
         with:
+          tag_name: release
           files: out\make\**
           tag: latest
         env:
@@ -87,7 +89,7 @@ jobs:
       - name: Create release and upload artifact
         uses: softprops/action-gh-release@v1
         with:
-          draft: true
+          tag_name: release
           repository: yosle/xnauta-electron
           files: out/make/**
         env:
