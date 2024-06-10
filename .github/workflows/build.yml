@@ -60,7 +60,6 @@ jobs:
         with:
           tag_name: release
           files: out\make\**
-          tag: latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
