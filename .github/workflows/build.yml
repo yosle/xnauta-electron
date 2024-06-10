@@ -5,6 +5,8 @@ on: workflow_dispatch
 jobs:
   build-linux:
     runs-on: ubuntu-latest
+    permissions: 
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -26,12 +28,15 @@ jobs:
       - name: Create release and upload artifact
         uses: softprops/action-gh-release@v1
         with:
+          tag: latest
           files: out/make/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-windows:
     runs-on: windows-latest
+    permissions:
+          contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -51,14 +56,17 @@ jobs:
         run: npm run make
 
       - name: Create release and upload artifact
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v1        
         with:
           files: out\make\**
+          tag: latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-macos:
     runs-on: macos-latest
+    permissions:
+          contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
