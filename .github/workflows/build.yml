@@ -1,26 +1,91 @@
-name: Release app
+name: Build and Package
+
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
-  build:
-    strategy:
-      matrix:
-        os:
-          [
-            { name: "linux", image: "ubuntu-latest" },
-            { name: "windows", image: "windows-latest" },
-            { name: "macos", image: "macos-latest" },
-          ]
-    runs-on: ${{ matrix.os.image }}
+  build-linux:
+    runs-on: ubuntu-latest
     steps:
-      - name: Github checkout
-        uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
         with:
-          node-version: 20
-      - run: npm ci
-      - name: Publish app
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run package
+        run: npm run package
+
+      - name: Run make
+        run: npm run make
+
+      - name: Copy artifacts to releases
+        run: |
+          mkdir -p releases/linux
+          cp -r out/make/* releases/linux
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: npm run publish
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run package
+        run: npm run package
+
+      - name: Run make
+        run: npm run make
+
+      - name: Copy artifacts to releases
+        run: |
+          mkdir releases\windows
+          xcopy out\make releases\windows /s /e /y
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run package
+        run: npm run package
+
+      - name: Run make
+        run: npm run make
+
+      - name: Copy artifacts to releases
+        run: |
+          mkdir -p releases/macos
+          cp -r out/make/* releases/macos
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
