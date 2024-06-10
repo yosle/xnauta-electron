@@ -1,6 +1,9 @@
 name: Build and Package
 
-on: workflow_dispatch
+on:
+  push:
+    tags:
+      - "v*.*.*"
 
 jobs:
   build-linux:
@@ -23,11 +26,12 @@ jobs:
       - name: Run make
         run: npm run make
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Create release and upload artifact
+        uses: softprops/action-gh-release@v1
         with:
-          name: linux-artifacts
-          path: out/make
+          files: out/make/**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-windows:
     runs-on: windows-latest
@@ -49,11 +53,12 @@ jobs:
       - name: Run make
         run: npm run make
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Create release and upload artifact
+        uses: softprops/action-gh-release@v1
         with:
-          name: windows-artifacts
-          path: out\make
+          files: out\make\**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-macos:
     runs-on: macos-latest
@@ -75,8 +80,9 @@ jobs:
       - name: Run make
         run: npm run make
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Create release and upload artifact
+        uses: softprops/action-gh-release@v1
         with:
-          name: macos-artifacts
-          path: out/make
+          files: out/make/**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
