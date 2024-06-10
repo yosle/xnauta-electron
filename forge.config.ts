@@ -57,6 +57,18 @@ const config: ForgeConfig = {
       },
     }),
   ],
+  publishers: [
+    {
+      name: "@electron-forge/publisher-github",
+      config: {
+        repository: {
+          owner: "yosle",
+          name: "xnauta-electron",
+        },
+        prerelease: true,
+      },
+    },
+  ],
 };
 
 export default config;
