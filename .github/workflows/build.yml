@@ -83,6 +83,8 @@ jobs:
       - name: Create release and upload artifact
         uses: softprops/action-gh-release@v1
         with:
+          draft: true
+          repository: yosle/xnauta-electron
           files: out/make/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
