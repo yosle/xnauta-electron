@@ -23,7 +23,7 @@ const config: ForgeConfig = {
       description: "Connect and manage ETECSA services",
       name: "xnauta",
     }),
-    // new MakerZIP({}, ["darwin"]),
+    new MakerZIP({}, ["darwin"]),
     // new MakerRpm({}),
     new MakerDeb({
       options: {
