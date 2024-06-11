@@ -32,6 +32,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
   showLoading: (
     callback: (event: IpcRendererEvent | IpcMainEvent, value: string) => void
   ) => ipcRenderer.on("show_loading", callback),
+  showLocationInfo: (
+    callback: (event: IpcRendererEvent | IpcMainEvent, value: string) => void
+  ) => ipcRenderer.on("show_location_info", callback),
 });
 
 // contextBridge.exposeInMainWorld('electronAPI', {

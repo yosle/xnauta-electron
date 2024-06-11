@@ -21,7 +21,8 @@ import Session from "./lib/nauta/Session";
 import { CookieJar } from "tough-cookie";
 
 import { updateElectronApp } from "update-electron-app";
-import * as Sentry from "@sentry/electron";
+import GeoLocationProvider from "./lib/geolocation";
+// import * as Sentry from "@sentry/electron";
 
 // crashReporter.start({ submitURL: "https://t.me/UtilesSaldo" });
 
@@ -135,6 +136,8 @@ const createWindow = (): void => {
   // Open the DevTools.
   // mainWindow.webContents.openDevTools();
 
+  // On close minimize to tray bar. The app must be closed always
+  // from the tray bar context menu
   mainWindow.on("close", (event) => {
     if (!isQuitting) {
       event.preventDefault();
@@ -147,6 +150,7 @@ const createWindow = (): void => {
     }
   });
 
+  // minimize to tray bar
   mainWindow.on("minimize", (event: IpcMainEvent) => {
     event.preventDefault();
     mainWindow?.hide();
@@ -174,6 +178,9 @@ const createWindow = (): void => {
     contextMenuConnected.items[1].visible = false;
     contextMenuConnected.items[3].visible = false;
     tray.setContextMenu(contextMenuConnected);
+
+    // testing
+    updateLocationData();
   });
 
   async function handleLogin(
@@ -360,21 +367,19 @@ const createWindow = (): void => {
       mainWindow.webContents.send("show_login");
     }
   }
+
+  async function updateLocationData() {
+    const data = await GeoLocationProvider.getLocationData();
+    if (data) {
+      mainWindow.webContents.send("show_location_info", data);
+    }
+  }
 };
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", createWindow);
-
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    // app.quit();
-  }
-});
 
 app.on("activate", () => {
   // On OS X it's common to re-create a window in the app when the
@@ -383,6 +388,3 @@ app.on("activate", () => {
     createWindow();
   }
 });
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.

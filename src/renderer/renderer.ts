@@ -26,7 +26,6 @@
  * ```
  */
 
-import { load } from "cheerio";
 import "../css/index.css";
 import { IpcRendererEvent } from "electron";
 
@@ -46,6 +45,9 @@ export interface IElectronAPI {
   ) => void;
   showLoading: (
     callback: (event: IpcRendererEvent, value: boolean) => void
+  ) => void;
+  showLocationInfo: (
+    callback: (event: IpcRendererEvent, value: any) => void
   ) => void;
 }
 
@@ -82,6 +84,8 @@ logOutBtn.addEventListener("click", () => {
 function showLoginForm() {
   // const h1 = document.getElementById('num');
   const div = document.getElementById("counter");
+  const locationDiv = document.getElementById("location_section");
+  locationDiv.style.display = "none";
   div.style.display = "none";
   form.style.display = "block";
 }
@@ -218,4 +222,20 @@ window.electronAPI.showLoginForm(() => {
   resetCounter();
   clearInterval(intervalId);
   showLoginForm();
+});
+
+window.electronAPI.showLocationInfo((event, value) => {
+  const container = document.getElementById("location_section");
+  const ipDiv = document.getElementById("public_ip");
+  const extraData = document.getElementById("isp_provider");
+  if (value.ip && value?.country?.name && (value.city || value?.region)) {
+    ipDiv.innerText = `📡 ${value.ip} ${value?.city || value?.region}/${
+      value?.country?.name
+    } `;
+  } else ipDiv.innerText = "";
+
+  if (value?.asn?.name) {
+    extraData.innerText = value?.asn?.name;
+  } else extraData.innerText = "";
+  container.style.display = "block";
 });
