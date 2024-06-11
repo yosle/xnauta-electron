@@ -54,6 +54,23 @@ updateElectronApp({
   updateInterval: "45 minutes",
 });
 
+let mainWindow: BrowserWindow | null = null;
+
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit();
+} else {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  app.on("second-instance", (_event, _commandLine, _workingDirectory) => {
+    // Someone tried to run a second instance, we should focus our window.
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
+  });
+}
+
 // Initialize
 const store = new ElectronStore();
 const cookieJar = new CookieJar();
@@ -70,7 +87,7 @@ const icon = nativeImage.createFromPath(iconPath);
 
 const createWindow = (): void => {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     icon: icon,
     show: false,
     height: 400,
