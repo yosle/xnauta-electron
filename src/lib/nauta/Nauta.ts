@@ -11,9 +11,6 @@ export default class Nauta {
   readonly MAX_TIMEOUT_MILISECONDS = 30000;
 
   constructor(storeInstance: Store, cookieJar: CookieJar) {
-    // const store = new Store({
-    //   encryptionKey: "nodejs/electron/XNauta",
-    // });
     this.store = storeInstance;
     this.cookieJar = cookieJar;
   }
@@ -119,7 +116,7 @@ export default class Nauta {
       this.store.set(sessionData);
       return sessionData;
     } catch (error) {
-      console.error("Error al hacer login", error);
+      console.error("NAUTA LOGIN ERROR", error);
       return error;
     }
   }

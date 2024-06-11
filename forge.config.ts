@@ -66,6 +66,7 @@ const config: ForgeConfig = {
           name: "xnauta-electron",
         },
         prerelease: true,
+        
       },
     },
   ],

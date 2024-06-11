@@ -35,8 +35,8 @@ export default class Session {
         },
       }
     );
-    console.log("parse time response: ", response.body);
-    return parseTime(response.body);
+    console.log("GET REMAINING TIME ", response?.body);
+    return parseTime(response?.body);
   }
 
   async logout() {
