@@ -5,7 +5,7 @@ on: workflow_dispatch
 jobs:
   build-linux:
     runs-on: ubuntu-latest
-    permissions: 
+    permissions:
       contents: write
     steps:
       - name: Checkout repository
@@ -27,8 +27,8 @@ jobs:
 
       - name: Create release and upload artifact
         uses: softprops/action-gh-release@v1
-        with: 
-          tag_name: release
+        with:
+          tag_name: alpha
           files: out/make/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -36,37 +36,7 @@ jobs:
   build-windows:
     runs-on: windows-latest
     permissions:
-          contents: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: "20"
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run package
-        run: npm run package
-
-      - name: Run make
-        run: npm run make
-
-      - name: Create release and upload artifact
-        uses: softprops/action-gh-release@v1        
-        with:
-          tag_name: release
-          files: out\make\**
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  build-macos:
-    runs-on: macos-latest
-    permissions:
-          contents: write
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -88,7 +58,37 @@ jobs:
       - name: Create release and upload artifact
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: release
+          tag_name: alpha
+          files: out\make\**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-macos:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run package
+        run: npm run package
+
+      - name: Run make
+        run: npm run make
+
+      - name: Create release and upload artifact
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: alpha
           repository: yosle/xnauta-electron
           files: out/make/**
         env:
