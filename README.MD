@@ -9,8 +9,8 @@ Con 💗 desde 🇨🇺
 XNauta is a cross-platform open-source application developed with Electron that allows users to connect and manage the remaining time for ETECSA service customers in Cuba. Currently, the application is in an early development stage (alpha), so releases may contain some bugs. Give a star and all your love to this repo so the application keeps improving.
 
 With 💗 from 🇨🇺
-
-![Captura de pantalla de XNauta](/images/screenshot1.png)
+![Captura de pantalla de XNauta en Windows 10](/images/screenshot2.webp)
+![Captura de pantalla de XNauta en Ubuntu 22.04](/images/screenshot1.webp)
 
 ## Características
 
