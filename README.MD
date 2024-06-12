@@ -26,7 +26,7 @@ With 💗 from 🇨🇺
 
 ## Instalación
 
-Para instalar y ejecutar XNauta en tu máquina local, puedes hacerlo desde el directorio [releases del proyecto](https://github.com/yosle/xnauta-electron/releases).
+Para instalar y ejecutar XNauta en tu máquina local, puedes hacerlo descargando los binarios para el sistema operativo que uses desde el directorio [releases del proyecto](https://github.com/yosle/xnauta-electron/releases).
 
 ## Contribuir
 
