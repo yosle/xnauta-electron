@@ -1,6 +1,14 @@
 # XNauta
 
-XNauta es una aplicación de código abierto desarrollada con Electron que permite a los usuarios conectarse y gestionar el tiempo restante para los clientes del servicio de ETECSA en Cuba. Actualmente, la aplicación se encuentra en una fase inicial de desarrollo (alpha), por lo que los lanzamientos pueden contener algunos errores. Estaria encantado de saber que les parece. Estamos trabajando arduamente para alcanzar la versión 1.0.
+XNauta es una aplicación multiplataforma de código abierto desarrollada con Electron que permite a los usuarios conectarse y gestionar el tiempo restante para los clientes del servicio de ETECSA en Cuba. Actualmente, la aplicación se encuentra en una fase inicial de desarrollo (alpha), por lo que los lanzamientos pueden contener algunos errores. Todo feedback es bienvenido.
+
+Con 💗 desde 🇨🇺
+
+---
+
+XNauta is a cross-platform open-source application developed with Electron that allows users to connect and manage the remaining time for ETECSA service customers in Cuba. Currently, the application is in an early development stage (alpha), so releases may contain some bugs. All feedback is welcome.
+
+With 💗 from 🇨🇺
 
 ![Captura de pantalla de XNauta](/images/screenshot1.png)
 
