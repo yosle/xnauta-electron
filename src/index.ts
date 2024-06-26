@@ -22,6 +22,7 @@ import { CookieJar } from "tough-cookie";
 
 import { updateElectronApp } from "update-electron-app";
 import GeoLocationProvider from "./lib/geolocation";
+import { checkNacConnection } from "../src/lib/utils";
 // import * as Sentry from "@sentry/electron";
 
 // crashReporter.start({ submitURL: "https://t.me/UtilesSaldo" });
@@ -49,6 +50,7 @@ if (args.version || args.v) {
 }
 
 let mainWindow: BrowserWindow | null = null;
+let updateInterval: NodeJS.Timer | undefined;
 
 const gotTheLock = app.requestSingleInstanceLock();
 
@@ -191,7 +193,22 @@ const createWindow = (): void => {
     tray.setContextMenu(contextMenuConnected);
 
     // testing
-    updateLocationData();
+    updateLocationData().then((isConnected) => {
+      if (isConnected) {
+        new Notification({
+          title: NOTIFICATION_TITLE,
+          body: "Detectada conexion a Internet",
+        }).show();
+      } else {
+        checkNacConnection().then((isNac) => {
+          if (isNac)
+            new Notification({
+              title: NOTIFICATION_TITLE,
+              body: "Detectada conexion a Intranet Nacional",
+            }).show();
+        });
+      }
+    });
   });
 
   async function handleLogin(
@@ -244,6 +261,7 @@ const createWindow = (): void => {
         );
         return;
       }
+      updateInterval = setInterval(updateLocationData, 60000);
       mainWindow.webContents.send("show_loading", false);
       console.log("TIEMPO RESTANTE: ", time);
       mainWindow.webContents.send("show_counter", time);
@@ -274,6 +292,7 @@ const createWindow = (): void => {
     contextMenuConnected.items[1].visible = false;
     contextMenuConnected.items[3].visible = false;
     tray.setContextMenu(contextMenuConnected);
+    clearInterval(updateInterval);
 
     mainWindow.webContents.send("show_loading", true);
     const username = (await store.get("username")) as string;
@@ -391,7 +410,9 @@ const createWindow = (): void => {
     const data = await GeoLocationProvider.getLocationData();
     if (data) {
       mainWindow.webContents.send("show_location_info", data);
+      return true;
     }
+    return false;
   }
 };
 

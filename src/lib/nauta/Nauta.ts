@@ -89,7 +89,6 @@ export default class Nauta {
       let response = await got.get("https://secure.etecsa.net:8443", {
         cookieJar,
       });
-      console.log("RESPONSE STATUS: ", response?.statusCode);
       const loginParameters = this.getLoginParams(response.body);
       console.log("LOGIN PARAMS: ", loginParameters);
       response = await got.post("https://secure.etecsa.net:8443/LoginServlet", {
