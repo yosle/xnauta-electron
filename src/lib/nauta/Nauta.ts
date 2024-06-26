@@ -1,6 +1,6 @@
 import * as cheerio from "cheerio";
 import Store from "electron-store";
-import got from "got";
+import got, { RequestError } from "got";
 import { CookieJar } from "tough-cookie";
 
 export default class Nauta {
@@ -56,7 +56,7 @@ export default class Nauta {
       minutes = 60;
     }
 
-    return { hours, minutes, seconds: 0 };
+    return { hours, minutes, seconds };
   };
 
   public getLoginParams(body: string) {
@@ -101,8 +101,36 @@ export default class Nauta {
           password: password,
         },
       });
-      if (!response || response instanceof Error)
-        return new Error(`No se ha podido conectar`);
+      console.log("login response: ", response.body);
+
+      if (!response)
+        throw new Error(
+          `Error de conexión. Comprueba que estas conectado a una WiFi de ETECSA, o si estas usando proxy o VPN.`
+        );
+
+      if (
+        response.body.includes(
+          "El nombre de usuario o contraseña son incorrectos."
+        )
+      ) {
+        console.log("El nombre de usuario o contraseña son incorrectos.");
+        throw new Error(`El nombre de usuario o contraseña son incorrectos.`);
+      }
+
+      if (response.body.includes("Su tarjeta no tiene saldo disponible")) {
+        console.log(`La cuenta ${username} no tiene saldo disponible`);
+        throw new Error(`Su cuenta ${username} no tiene saldo disponible.`);
+      }
+
+      if (response.body.includes("Su cuenta esta siendo usada")) {
+        console.log("La cuenta esta siendo usada");
+        throw new Error(`Su cuenta esta siendo usada.`);
+      }
+
+      if (response.body.includes("No se pudo autorizar al usuario")) {
+        console.log("No se pudo autorizar al usuario");
+        throw new Error(`No se pudo autorizar al usuario.`);
+      }
 
       const sessionData = {
         username: username,
@@ -110,13 +138,21 @@ export default class Nauta {
       };
 
       if (!sessionData.username || !sessionData.uuid) {
-        return new Error(`No se ha podido conectar`);
+        throw new Error(
+          `No se ha podido obtener correctamente los datos de la sesión. Compruebe si está conectado.`
+        );
       }
+
       //save session in store
       this.store.set(sessionData);
       return sessionData;
     } catch (error) {
-      console.error("NAUTA LOGIN ERROR", error);
+      console.error("NAUTA LOGIN ERROR", error?.message || error);
+      if (error instanceof RequestError) {
+        return new Error(
+          `Error de conexión. Comprueba que estas conectado a una WiFi de ETECSA, o si estas usando proxy o VPN.`
+        );
+      }
       return error;
     }
   }

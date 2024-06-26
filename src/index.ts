@@ -229,11 +229,8 @@ const createWindow = (): void => {
     try {
       mainWindow.webContents.send("show_loading", true);
       const session = await nauta.login(user, password);
-      if (!session || session instanceof Error) {
-        dialog.showErrorBox(
-          "Error de conexión",
-          `No se ha podido conectar con ETECSA. Comprueba que no estas usando un VPN o estas detrás de un proxy.`
-        );
+      if (session instanceof Error) {
+        dialog.showErrorBox("Error", session.message);
         mainWindow.webContents.send("show_loading", false);
         return;
       }
@@ -247,7 +244,10 @@ const createWindow = (): void => {
         mainWindow.webContents.send("show_loading", false);
         mainWindow.webContents.send("show_login");
         isSessionActive = true;
-        dialog.showErrorBox("Error", `No se ha podido iniciar sesion`);
+        dialog.showErrorBox(
+          "Error",
+          `No se ha podido obtener el tiempo restante. Por favor comprueba si ya estás conectado.`
+        );
         return;
       }
       mainWindow.webContents.send("show_loading", false);
