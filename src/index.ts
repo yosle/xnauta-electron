@@ -48,12 +48,6 @@ if (args.version || args.v) {
   app.quit();
 }
 
-// Check for updates on app startup
-updateElectronApp({
-  logger: console,
-  updateInterval: "45 minutes",
-});
-
 let mainWindow: BrowserWindow | null = null;
 
 const gotTheLock = app.requestSingleInstanceLock();
@@ -257,6 +251,14 @@ const createWindow = (): void => {
       contextMenuConnected.items[1].visible = true;
       contextMenuConnected.items[3].visible = true;
       tray.setContextMenu(contextMenuConnected);
+      if (username.includes("@nauta.com.cu")) {
+        // try to update when connected
+        // refractor this later
+        updateElectronApp({
+          logger: console,
+          updateInterval: "10 minutes",
+        });
+      }
     } catch (error) {
       isSessionActive = false;
       mainWindow.webContents.send("show_loading", false);
