@@ -35,7 +35,7 @@ import GeoLocationProvider from "./lib/geolocation";
 // whether you're running in development or production).
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
-const APP_VERSION_NUMBER = "0.0.4";
+const APP_VERSION_NUMBER = "0.0.5";
 const NOTIFICATION_TITLE = "XNauta";
 const args = minimist(process.argv.slice(1));
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.

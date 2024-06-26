@@ -1,7 +1,7 @@
 {
   "name": "xnauta",
   "productName": "xnauta",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Cliente Multiplataforma para el Portal de ETECSA",
   "main": ".webpack/main",
   "repository": {
