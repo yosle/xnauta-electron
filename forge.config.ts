@@ -10,7 +10,7 @@ import { rendererConfig } from "./webpack.renderer.config";
 
 const config: ForgeConfig = {
   packagerConfig: {
-    appVersion: "0.0.1",
+    appVersion: "0.0.4",
     icon: "./src/assets/xnauta",
     name: "xnauta",
     extraResource: ["./src/assets/xnauta.png", "./src/assets/xnauta.ico"],
@@ -66,7 +66,6 @@ const config: ForgeConfig = {
           name: "xnauta-electron",
         },
         prerelease: true,
-        
       },
     },
   ],
