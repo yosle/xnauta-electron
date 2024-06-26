@@ -101,7 +101,7 @@ export default class Nauta {
           password: password,
         },
       });
-      console.log("login response: ", response.body);
+      console.log("LOGIN RAW RESPONSE: ", response.body);
 
       if (!response)
         throw new Error(
@@ -113,23 +113,23 @@ export default class Nauta {
           "El nombre de usuario o contraseña son incorrectos."
         )
       ) {
-        console.log("El nombre de usuario o contraseña son incorrectos.");
         throw new Error(`El nombre de usuario o contraseña son incorrectos.`);
       }
 
       if (response.body.includes("Su tarjeta no tiene saldo disponible")) {
-        console.log(`La cuenta ${username} no tiene saldo disponible`);
         throw new Error(`Su cuenta ${username} no tiene saldo disponible.`);
       }
 
-      if (response.body.includes("Su cuenta esta siendo usada")) {
-        console.log("La cuenta esta siendo usada");
+      if (response.body.includes("El usuario ya está conectado.")) {
         throw new Error(`Su cuenta esta siendo usada.`);
       }
 
       if (response.body.includes("No se pudo autorizar al usuario")) {
-        console.log("No se pudo autorizar al usuario");
         throw new Error(`No se pudo autorizar al usuario.`);
+      }
+
+      if (response.body.includes("El usuario ya está conectado.")) {
+        throw new Error(`El usuario ya está conectado.`);
       }
 
       const sessionData = {
