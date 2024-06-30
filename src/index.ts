@@ -81,7 +81,7 @@ const iconPath = app.isPackaged
   ? path.join(__dirname, "..", "..", "..", "xnauta.png")
   : path.join("src", "assets", "xnauta.png");
   const iconGrayPath = app.isPackaged
-  ? path.join(__dirname, "..", "..", "..", "xnauta-gray2.png")
+  ? path.join(__dirname, "..", "..", "..", "xnauta-gray.png")
   : path.join("src", "assets", "xnauta-gray2.png");
 const icon = nativeImage.createFromPath(iconPath);
 
@@ -152,7 +152,7 @@ const createWindow = (): void => {
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   // On close minimize to tray bar. The app must be closed always
   // from the tray bar context menu

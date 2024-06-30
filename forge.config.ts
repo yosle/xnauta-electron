@@ -2,7 +2,7 @@ import type { ForgeConfig } from "@electron-forge/shared-types";
 import { MakerSquirrel } from "@electron-forge/maker-squirrel";
 import { MakerZIP } from "@electron-forge/maker-zip";
 import { MakerDeb } from "@electron-forge/maker-deb";
-import { MakerRpm } from "@electron-forge/maker-rpm";
+// import { MakerRpm } from "@electron-forge/maker-rpm";
 import { WebpackPlugin } from "@electron-forge/plugin-webpack";
 
 import { mainConfig } from "./webpack.main.config";
@@ -13,7 +13,7 @@ const config: ForgeConfig = {
     appVersion: "0.0.5",
     icon: "./src/assets/xnauta",
     name: "xnauta",
-    extraResource: ["./src/assets/xnauta.png","./src/assets/xnauta-gray2.png", "./src/assets/xnauta.ico"],
+    extraResource: ["./src/assets/xnauta.png","./src/assets/xnauta-gray.png", "./src/assets/xnauta.ico"],
   },
 
   rebuildConfig: {},
@@ -22,6 +22,11 @@ const config: ForgeConfig = {
       authors: "Yosleivy Baez",
       description: "Connect and manage ETECSA services",
       name: "xnauta",
+     loadingGif:"./src/assets/xnauta.gif",
+     setupIcon:"./src/assets/xnauta.ico",
+    setupMsi: "xnauta_Installer.msi",
+    noMsi:false,
+    iconUrl:"https://github.com/yosle/xnauta-electron/blob/master/src/assets/xnauta.png"
     }),
     new MakerZIP({}, ["darwin"]),
     // new MakerRpm({}),
