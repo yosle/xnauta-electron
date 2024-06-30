@@ -24,8 +24,6 @@ const config: ForgeConfig = {
       name: "xnauta",
      loadingGif:"./src/assets/xnauta.gif",
      setupIcon:"./src/assets/xnauta.ico",
-    setupMsi: "xnauta_Installer.msi",
-    noMsi:false,
     iconUrl:"https://github.com/yosle/xnauta-electron/blob/master/src/assets/xnauta.png"
     }),
     new MakerZIP({}, ["darwin"]),
