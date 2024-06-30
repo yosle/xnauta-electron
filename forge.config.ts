@@ -13,7 +13,7 @@ const config: ForgeConfig = {
     appVersion: "0.0.5",
     icon: "./src/assets/xnauta",
     name: "xnauta",
-    extraResource: ["./src/assets/xnauta.png", "./src/assets/xnauta.ico"],
+    extraResource: ["./src/assets/xnauta.png","./src/assets/xnauta-gray2.png", "./src/assets/xnauta.ico"],
   },
 
   rebuildConfig: {},

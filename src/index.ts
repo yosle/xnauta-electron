@@ -63,6 +63,7 @@ if (!gotTheLock) {
     if (mainWindow) {
       if (mainWindow.isMinimized()) mainWindow.restore();
       mainWindow.focus();
+      return
     }
   });
 }
@@ -79,6 +80,9 @@ let isSessionActive = false;
 const iconPath = app.isPackaged
   ? path.join(__dirname, "..", "..", "..", "xnauta.png")
   : path.join("src", "assets", "xnauta.png");
+  const iconGrayPath = app.isPackaged
+  ? path.join(__dirname, "..", "..", "..", "xnauta-gray2.png")
+  : path.join("src", "assets", "xnauta-gray2.png");
 const icon = nativeImage.createFromPath(iconPath);
 
 const createWindow = (): void => {
@@ -102,7 +106,8 @@ const createWindow = (): void => {
   mainWindow.removeMenu();
   nativeTheme.themeSource = "dark";
 
-  const tray = new Tray(icon);
+  const tray = new Tray(iconGrayPath);
+  tray.setTitle("XNauta App")
   // TODO: refractor tray menu logic later
 
   const contextMenuConnected = Menu.buildFromTemplate([
@@ -168,8 +173,8 @@ const createWindow = (): void => {
     event.preventDefault();
     mainWindow?.hide();
     new Notification({
-      title: NOTIFICATION_TITLE,
-      icon: icon,
+      title: NOTIFICATION_TITLE,      
+      icon: icon,     
       body: "XNauta esta corriendo en segundo plano. Click en la tray bar para ver opciones",
     }).show();
   });
@@ -199,13 +204,16 @@ const createWindow = (): void => {
           title: NOTIFICATION_TITLE,
           body: "Detectada conexion a Internet",
         }).show();
+        tray.setImage(icon)
       } else {
         checkNacConnection().then((isNac) => {
-          if (isNac)
+          if (isNac){
             new Notification({
               title: NOTIFICATION_TITLE,
               body: "Detectada conexion a Intranet Nacional",
             }).show();
+        tray.setImage(icon)
+          }         
         });
       }
     });
@@ -269,6 +277,7 @@ const createWindow = (): void => {
       contextMenuConnected.items[1].visible = true;
       contextMenuConnected.items[3].visible = true;
       tray.setContextMenu(contextMenuConnected);
+      tray.setImage(icon)
       if (username.includes("@nauta.com.cu")) {
         // try to update when connected
         // refractor this later
@@ -278,6 +287,7 @@ const createWindow = (): void => {
         });
       }
     } catch (error) {
+      tray.setImage(iconGrayPath)
       isSessionActive = false;
       mainWindow.webContents.send("show_loading", false);
       dialog.showErrorBox(
@@ -316,12 +326,12 @@ const createWindow = (): void => {
     } else {
       store.clear();
       mainWindow.webContents.send("show_loading", false);
-
       new Notification({
         title: NOTIFICATION_TITLE,
         body: "Sesion cerrada con exito",
       }).show();
       mainWindow.webContents.send("show_login");
+    tray.setImage(iconGrayPath)
     }
   }
 
@@ -352,9 +362,9 @@ const createWindow = (): void => {
           contextMenuConnected.items[1].visible = true;
           contextMenuConnected.items[3].visible = true;
           tray.setContextMenu(contextMenuConnected);
+          tray.setImage(icon)
 
           const NOTIFICATION_BODY = `Sesión ${username} recuperada con éxito`;
-
           new Notification({
             title: NOTIFICATION_TITLE,
             body: NOTIFICATION_BODY,
