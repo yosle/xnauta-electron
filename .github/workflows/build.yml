@@ -1,6 +1,9 @@
 name: Build and Package
 
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   build-linux:
