@@ -1,7 +1,7 @@
 # XNauta
 ![XNauta Logo](/src/assets/xnauta256x256.png)
 
-XNauta es una aplicación multiplataforma de código abierto desarrollada con Electron que permite a los usuarios conectarse y gestionar el tiempo restante para los clientes del servicio de ETECSA en Cuba (WiFi y 'Nauta Hogar'). Actualmente, la aplicación se encuentra en una fase inicial de desarrollo (alpha), por lo que los lanzamientos pueden contener algunos errores. Si deseas dale una estrella a este repo para que la aplicación siga mejorando.
+XNauta es una aplicación multiplataforma de código abierto desarrollada con Electron que permite a los usuarios conectarse y gestionar el tiempo restante para los clientes del servicio de ETECSA en Cuba (WiFi y 'Nauta Hogar'). Si deseas dale una estrella a este repo para que la aplicación siga mejorando.
 
 Con 💗 desde 🇨🇺
 
