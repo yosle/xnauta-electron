@@ -10,7 +10,7 @@
   },
   "scripts": {
     "start": "electron-forge start",
-    "package": "electron-forge package executableName=xnauta",
+    "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx ."
@@ -18,7 +18,8 @@
   "keywords": [],
   "author": {
     "name": "Yosleivy Baez Acosta",
-    "email": "yosle007@gmail.com"
+    "email": "yosle007@gmail.com",
+    "url": "https://www.xnauta.com"
   },
   "license": "MIT",
   "devDependencies": {
