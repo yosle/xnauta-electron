@@ -45,8 +45,6 @@ Para instalar y ejecutar XNauta en tu máquina local, puedes hacerlo descargando
    ```
 5. Crea un pull request desde tu rama hacia `main` en nuestro repositorio.
 
-Por favor, asegúrate de que tu código sigue nuestras [Guías de Estilo](link-a-las-guias-de-estilo) y que has probado tus cambios antes de enviar el pull request.
-
 Tu apoyo nos ayuda a mantener y mejorar la aplicación.
 
 ## Contacto
